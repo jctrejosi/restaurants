@@ -1,2 +1,12 @@
 # Sistema legado (fuentes, binarios, imágenes y datos de punto_c)
 punto_c/
+
+# Dependencias y artefactos del backend
+backend/node_modules/
+backend/dist/
+backend/coverage/
+
+# Variables de entorno locales
+**/.env
+**/.env.*
+!**/.env.example
