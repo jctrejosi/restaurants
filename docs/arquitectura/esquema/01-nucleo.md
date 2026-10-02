@@ -10,7 +10,7 @@ CREATE TABLE tenant (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   nombre      text NOT NULL,
   activo      boolean NOT NULL DEFAULT true,
-  created_at  timestamptz NOT NULL DEFAULT now()
+  creado_en  timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE sucursal (
@@ -25,8 +25,8 @@ CREATE TABLE sucursal (
   zona_horaria  text NOT NULL DEFAULT 'America/Bogota',
   moneda        char(3) NOT NULL DEFAULT 'COP',
   activa        boolean NOT NULL DEFAULT true,
-  created_at    timestamptz NOT NULL DEFAULT now(),
-  updated_at    timestamptz NOT NULL DEFAULT now(),
+  creado_en    timestamptz NOT NULL DEFAULT now(),
+  actualizado_en    timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT uq_sucursal_codigo UNIQUE (tenant_id, codigo)
 );
 
@@ -42,7 +42,7 @@ CREATE TABLE configuracion_sucursal (
                             CHECK (comportamiento_offline IN ('completo','solo_lectura')),
   ventana_programacion_min integer NOT NULL DEFAULT 1440 CHECK (ventana_programacion_min > 0),
   limite_pedidos_franja   integer CHECK (limite_pedidos_franja IS NULL OR limite_pedidos_franja > 0),
-  updated_at              timestamptz NOT NULL DEFAULT now()
+  actualizado_en              timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE horario_atencion (
@@ -140,8 +140,8 @@ CREATE TABLE usuario (
   pin_salt          text,
   activo            boolean NOT NULL DEFAULT true,
   ultimo_acceso_en  timestamptz,
-  created_at        timestamptz NOT NULL DEFAULT now(),
-  updated_at        timestamptz NOT NULL DEFAULT now(),
+  creado_en        timestamptz NOT NULL DEFAULT now(),
+  actualizado_en        timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT uq_usuario_email UNIQUE (tenant_id, email)
 );
 
@@ -183,7 +183,7 @@ CREATE TABLE dispositivo (
   ultima_conexion_en timestamptz,
   estado             text NOT NULL DEFAULT 'vinculado'
                        CHECK (estado IN ('vinculado','revocado')),
-  created_at         timestamptz NOT NULL DEFAULT now()
+  creado_en         timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE turno (
@@ -211,8 +211,8 @@ CREATE TABLE cliente (
   fecha_nacimiento  date,
   preferencias      jsonb,
   notas             text,
-  created_at        timestamptz NOT NULL DEFAULT now(),
-  updated_at        timestamptz NOT NULL DEFAULT now()
+  creado_en        timestamptz NOT NULL DEFAULT now(),
+  actualizado_en        timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE consentimiento (
@@ -247,7 +247,7 @@ CREATE TABLE solicitud_evento (
   mensaje          text,
   estado           text NOT NULL DEFAULT 'nueva'
                      CHECK (estado IN ('nueva','en_revision','contactada','cerrada')),
-  created_at       timestamptz NOT NULL DEFAULT now()
+  creado_en       timestamptz NOT NULL DEFAULT now()
 );
 ```
 

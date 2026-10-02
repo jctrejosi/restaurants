@@ -78,7 +78,7 @@ CREATE TABLE ajuste_pedido (
   porcentaje       numeric(5,2) CHECK (porcentaje IS NULL OR porcentaje BETWEEN 0 AND 100),
   motivo           text NOT NULL,
   usuario_id       uuid NOT NULL REFERENCES usuario(id),
-  created_at       timestamptz NOT NULL DEFAULT now(),
+  creado_en       timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT ck_ajuste_valor CHECK ((valor_centavos IS NOT NULL) <> (porcentaje IS NOT NULL))
 );
 
@@ -153,7 +153,7 @@ CREATE TABLE liquidacion_repartidor (
   tarifas_centavos  bigint  NOT NULL DEFAULT 0 CHECK (tarifas_centavos >= 0),
   propinas_centavos bigint  NOT NULL DEFAULT 0 CHECK (propinas_centavos >= 0),
   total_centavos    bigint  NOT NULL DEFAULT 0 CHECK (total_centavos >= 0),
-  created_at        timestamptz NOT NULL DEFAULT now(),
+  creado_en        timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT ck_liquidacion_rango CHECK (periodo_desde <= periodo_hasta)
 );
 ```
@@ -173,7 +173,7 @@ CREATE TABLE pago (
                       CHECK (estado IN ('pendiente','aprobado','rechazado','reembolsado')),
   pasarela_payload  jsonb,
   usuario_id        uuid REFERENCES usuario(id),
-  created_at        timestamptz NOT NULL DEFAULT now(),
+  creado_en        timestamptz NOT NULL DEFAULT now(),
   aprobado_en       timestamptz,
   reembolsado_en    timestamptz,
   CONSTRAINT ck_pago_origen CHECK ((pedido_id IS NOT NULL) <> (reserva_id IS NOT NULL))
@@ -200,7 +200,7 @@ CREATE TABLE cierre_caja (
   observaciones            text,
   reabierto_por            uuid REFERENCES usuario(id),
   reabierto_en             timestamptz,
-  created_at               timestamptz NOT NULL DEFAULT now()
+  creado_en               timestamptz NOT NULL DEFAULT now()
 );
 ```
 
@@ -222,7 +222,7 @@ CREATE TABLE factura (
   total_centavos     bigint NOT NULL CHECK (total_centavos >= 0),
   impuestos_json     jsonb,
   emitida_en         timestamptz,
-  created_at         timestamptz NOT NULL DEFAULT now(),
+  creado_en         timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT uq_factura_numero UNIQUE (sucursal_id, prefijo, numero)
 );
 
@@ -252,8 +252,8 @@ CREATE INDEX ix_domicilio_repart  ON domicilio_asignacion (repartidor_id, estado
 ```
 
 - **Pago único por pedido (invariante):** la suma de pagos `aprobado` no puede superar
-  `pedido.total_centavos`; el paso a `pagado` exige cubrirlo. Se valida en el dominio y con
-  prueba de base (trigger o prueba transaccional).
+  `pedido.total_centavos`; el paso a `pagado` exige cubrirlo. Se valida en el dominio y se
+  refuerza en base con `fn_pago_limite_pedido` y `fn_pedido_pagado_cubierto` (D-BD-16).
 - **División de cuenta:** la suma de `pago_linea` de un pago no supera `pago.monto_centavos`, y la
   suma de los pagos cubre el total del pedido.
 - `comanda.numero` es consecutivo por sucursal; `comanda_linea` impide repetir la misma línea.

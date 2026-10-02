@@ -22,7 +22,10 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:check": "node scripts/check-db.js"
+    "db:check": "node scripts/check-db.js",
+    "db:seed": "ts-node scripts/seed.ts",
+    "db:test": "ts-node scripts/test-db.ts",
+    "db:bench": "ts-node scripts/bench-db.ts"
   },
   "dependencies": {
     "@nestjs/cli": "11.0.24",

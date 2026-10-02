@@ -4,8 +4,11 @@ Documentación del **esquema físico** que implementa el modelo consolidado de
 [`../04-datos-y-persistencia.md`](../04-datos-y-persistencia.md) y que se construirá siguiendo
 [`../plans/01-plan-implementacion-base-de-datos.md`](../plans/01-plan-implementacion-base-de-datos.md).
 
-**Estado:** borrador v0.1 — sujeto a las decisiones D-BD-01…13 (E0 del plan); stack alineado con
-`ecommerce` (ver [`../05-stack-tecnologico.md`](../05-stack-tecnologico.md)).
+**Estado:** implementado E1–E10 (2026-10-02) — migraciones `0000`–`0008` aplicadas, seed y suite
+de aceptación completos (registro en
+[`../plans/02-e10-aceptacion.md`](../plans/02-e10-aceptacion.md)). El detalle de avance vive en
+[`../plans/01-plan-implementacion-base-de-datos.md`](../plans/01-plan-implementacion-base-de-datos.md);
+el stack y su estado, en [`../05-stack-tecnologico.md`](../05-stack-tecnologico.md).
 
 ## Documentos
 
@@ -28,13 +31,15 @@ Documentación del **esquema físico** que implementa el modelo consolidado de
 - **Dinero:** `bigint` en centavos, sufijo `_centavos`; moneda por sucursal.
 - **Estados:** `pgEnum` (enums nativos) para dominios cerrados; catálogos configurables como tablas
   (D-BD-04 revisada).
-- **Mutabilidad:** `updated_at` se mantiene con trigger en las tablas mutables.
+- **Mutabilidad:** `actualizado_en` se mantiene con trigger en las tablas mutables.
 - **JSON:** `jsonb` solo para payloads y snapshots que no se consultan por campo.
 - **Nombres de objetos:** `uq_` único, `ix_` índice, `ck_` check, `ex_` exclusión, `fk_` foránea.
 - **Reservas:** el solape de mesa se bloquea con constraint de exclusión (`btree_gist` obligatoria).
+- **Agregados:** el esquema `analytics` (8 vistas materializadas + `analytics.fn_refrescar_analytics()`)
+  vive únicamente como SQL manual en `backend/drizzle/migrate/0008_analytics.sql`: Drizzle no modela
+  vistas materializadas. Los reportes leen solo `analytics` (RNF-R5-03).
 
 > El DDL de estos documentos es la **especificación**; su materialización es
-> `backend/drizzle/schema.ts` y las migraciones de `backend/drizzle/migrate/`. Los DDL de los
-> volúmenes 01–04 usan `text` + `CHECK` como notación de especificación: al implementar `schema.ts`
-> se convierten a `pgEnum` (pendiente registrado en
-> [`../05-stack-tecnologico.md`](../05-stack-tecnologico.md) §7).
+> `backend/drizzle/schema.ts` (módulos `schema/01`–`08` + `relations.ts`) y las migraciones de
+> `backend/drizzle/migrate/` (`0000`–`0008`). Los DDL de los volúmenes 01–04 usan `text` + `CHECK`
+> como notación de especificación: en `schema.ts` se materializaron como `pgEnum` (D-BD-04 revisada).

@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend (migraciones + pruebas de BD)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: restaurants
+        ports:
+          - 5435:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d restaurants"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5435/restaurants
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extensiones y objeto immutable_unaccent
+        run: >
+          PGPASSWORD=postgres psql -h localhost -p 5435 -U postgres -d restaurants
+          -v ON_ERROR_STOP=1 -f db/docker/init.sql
+
+      - name: Usuarios de base de datos (migrator/app/readonly)
+        run: >
+          PGPASSWORD=postgres psql -h localhost -p 5435 -U postgres -d restaurants
+          -v ON_ERROR_STOP=1 -f db/docker/roles.sql
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: backend/yarn.lock
+
+      - name: Instalar dependencias
+        working-directory: backend
+        run: yarn install --frozen-lockfile
+
+      - name: Aplicar migraciones (base vacía)
+        working-directory: backend
+        run: yarn db:migrate
+
+      - name: Seed idempotente
+        working-directory: backend
+        run: yarn db:seed
+
+      - name: Compilar
+        working-directory: backend
+        run: yarn build
+
+      - name: Pruebas de base de datos
+        working-directory: backend
+        run: yarn db:test

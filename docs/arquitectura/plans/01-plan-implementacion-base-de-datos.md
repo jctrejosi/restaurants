@@ -31,6 +31,9 @@ criterios verificables. El esquema físico columna a columna está en
 | D-BD-11 | Entorno local | contenedor `restaurants_postgres` (proyecto compose `restaurants`, puerto 5435) | evitar colisión con `ecommerce` (`db`/5432) |
 | D-BD-12 | Backend | NestJS 11 + Drizzle + `pg`; yarn + dotenvx; API dev en 3001 | mismo patrón que `ecommerce` |
 | D-BD-13 | SQL manual | exclusión de reservas, particionado, triggers y `UNIQUE NULLS NOT DISTINCT` se escriben a mano en la migración generada | `drizzle-kit` no los genera; el snapshot no siempre los diffea |
+| D-BD-14 | Sellos | `creado_en` / `actualizado_en` en UTC (normalizado 2026-10-02; los borradores de `esquema/` mezclaban `created_at`/`updated_at`) | coherencia con el resto de nombres en español y con los sellos `*_en` |
+| D-BD-15 | Rango de reserva | `reserva.periodo tstzrange` materializado por trigger; la exclusión de solapes usa `periodo` | `timestamptz + interval` es STABLE y PostgreSQL no admite funciones STABLE en expresiones de índice/EXCLUDE (2026-10-02) |
+| D-BD-16 | Invariantes de dinero | Triggers `fn_pago_limite_pedido` y `fn_pedido_pagado_cubierto`; el primero bloquea el pedido (`FOR UPDATE`) para serializar pagos concurrentes. SUPUESTO: `pedido.total_centavos` es el monto a recaudar (propina incluida) y `pago.propina_centavos` desglosa parte del monto | el pago único es el invariante más crítico y el esquema admite trigger o prueba transaccional |
 
 ## 3. Estructura del repositorio de base de datos
 
@@ -39,9 +42,10 @@ db/
   docker/              # docker-compose.yml + init.sql (Postgres 16 + PostGIS + extensiones)
 backend/
   drizzle/
-    schema.ts          # esquema Drizzle (fuente única; materializa ../esquema/)
+    schema.ts          # barrel: re-exporta los módulos por dominio y las relaciones
+    schema/            # esquema Drizzle por etapa/dominio (materializa ../esquema/): 01-nucleo.ts, …
     relations.ts       # relaciones Drizzle
-    migrate/           # SQL generado por drizzle-kit (journal + migraciones)
+    migrate/           # SQL generado por drizzle-kit (journal + migraciones) + SQL manual (D-BD-13)
   scripts/             # utilidades (seed, check-db, migrate)
 ```
 
@@ -68,7 +72,7 @@ backend/
 - [x] Inicializar `backend/` (NestJS 11 + Drizzle + `pg`, yarn) — 2026-10-02.
 - [ ] Configurar CI: levantar Postgres, aplicar migraciones desde cero y ejecutar pruebas.
 - [ ] Definir usuarios de base de datos: `migrator` (DDL), `app` (DML), `readonly` (reportes).
-- [ ] Migración inicial de esquemas y convenciones (`organizacion`/`0000_…` con `drizzle-kit`).
+- [x] Migración inicial de esquemas y convenciones (`0000_fundamentos.sql` con `drizzle-kit`) — 2026-10-02.
 
 **Salida:** CI en verde aplicando una base vacía; conexión de la app y de solo lectura funcionando.
 
@@ -77,12 +81,19 @@ backend/
 Migraciones:
 
 - `0010_organizacion.sql`: `tenant`, `sucursal`, `configuracion_sucursal`, `horario_atencion`,
-  `cierre_temporal`, `impuesto`, `consecutivo`, `medio_pago`, `turno`.
+  `cierre_temporal`, `impuesto`, `consecutivo`, `medio_pago`, `regla_capacidad`, `estacion`,
+  `impresora`, `turno`.
 - `0011_acceso.sql`: `usuario`, `rol`, `permiso`, `rol_permiso`, `usuario_rol`, `dispositivo`.
 - `0012_personas.sql`: `cliente`, `consentimiento`, `repartidor`, `solicitud_evento`.
 
-Entregables: migraciones + seeds de roles base (adm, gerente, capitán, cajero, mesero, cocina,
-repartidor, marketing, contador) y permisos por código.
+Estado (2026-10-02):
+
+- [x] Migración `0000_fundamentos.sql` generada y aplicada: 22 tablas, 13 dominios `pgEnum`,
+  índices parciales, `UNIQUE NULLS NOT DISTINCT` en `usuario_rol` y triggers
+  `fn_set_actualizado_en`. Implementación en `backend/drizzle/schema/01-nucleo.ts` + `relations.ts`.
+- [x] Verificación en contenedor: duplicado `(usuario, rol, sucursal NULL)` rechazado; el trigger
+  actualiza `actualizado_en`.
+- [ ] Seeds de roles base y permisos por código (entregable de la etapa).
 
 **Salida:** se puede crear tenant → sucursal → usuarios con roles y alcance por sucursal.
 
@@ -95,6 +106,13 @@ Migraciones:
 - `0021_modificadores.sql`: `grupo_modificador`, `modificador`.
 - `0022_disponibilidad.sql`: `disponibilidad_producto`, `promocion`, `cupon`.
 
+Estado (2026-10-02):
+
+- [x] Migración `0001_catalogo.sql` generada y aplicada: 11 tablas, 3 dominios `pgEnum`,
+  `UNIQUE NULLS NOT DISTINCT` en `disponibilidad_producto` e índice descendente de precios.
+  Implementación en `backend/drizzle/schema/02-catalogo.ts` + `relations.ts`.
+- [ ] Seed de carta demo (10 categorías, 60 productos).
+
 **Salida:** carta completa por sede con precios vigentes, modificadores, alérgenos y agotados;
 seed de una carta demo (10 categorías, 60 productos).
 
@@ -106,6 +124,15 @@ Migraciones:
 - `0031_reservas.sql`: `politica_reserva`, `reserva` (**constraint de exclusión por rango**),
   `lista_espera`.
 
+Estado (2026-10-02):
+
+- [x] Migración `0002_salon_reservas.sql` generada y aplicada: 7 tablas, 5 dominios `pgEnum`,
+  `EXCLUDE USING gist` sobre `reserva.periodo` (materializado por trigger, D-BD-15) y triggers de
+  sellos. Implementación en `backend/drizzle/schema/03-salon-reservas.ts` + `relations.ts`.
+- [x] Verificación: solape en la misma mesa rechazado; reservas contigua y en otra mesa aceptadas;
+  una reserva cancelada no bloquea.
+- [ ] Seed de política de reserva y mesas demo.
+
 **Salida:** prueba de que dos reservas solapadas de la misma mesa son rechazadas por la base y que
 una reserva en otra mesa entra sin problema.
 
@@ -114,8 +141,21 @@ una reserva en otra mesa entra sin problema.
 Migraciones:
 
 - `0040_pedidos.sql`: `pedido`, `pedido_linea`, `pedido_linea_modificador`, `ajuste_pedido`.
-- `0041_comandas.sql`: `comanda`, `comanda_linea`, `regla_sla`, `regla_capacidad`.
+- `0041_comandas.sql`: `comanda`, `comanda_linea`, `regla_sla` (`regla_capacidad` quedó en E1, en la
+  configuración de sucursal).
 - `0042_indices_operativos.sql`: índices de KDS, pedidos activos y búsqueda.
+
+Estado (2026-10-02):
+
+- [x] Migración `0003_pedidos_comandas.sql` generada y aplicada: 7 tablas, 7 dominios `pgEnum`,
+  índices operativos (`ix_pedido_activo`, `ix_pedido_mesa`, `ix_pedido_contacto`, `ix_comanda_kds`)
+  y checks del legado (notas de 105 caracteres; mesa/hora según modalidad). Implementación en
+  `backend/drizzle/schema/04-pedidos.ts` + `relations.ts`.
+- [x] Verificación en contenedor: comandas por estación sobre las líneas correctas; una línea sin
+  estación queda sin comanda; consecutivo de comanda único por sucursal; notas de más de 105
+  caracteres rechazadas.
+- [ ] Prueba automatizada del enrutamiento en el backend (la regla `'99'`/vacío vive en el servicio).
+- [ ] Seeds de reglas SLA por estación.
 
 **Salida:** un pedido con líneas de varias estaciones genera comandas por estación; los productos
 con estación `99` o vacía no generan comanda (prueba automatizada).
@@ -125,6 +165,15 @@ con estación `99` o vacía no generan comanda (prueba automatizada).
 Migraciones:
 
 - `0050_domicilio.sql`: `zona_cobertura`, `domicilio_asignacion`, `liquidacion_repartidor`.
+
+Estado (2026-10-02):
+
+- [x] Migración `0004_domicilio.sql` generada y aplicada: 3 tablas, 1 dominio `pgEnum` y el índice
+  único parcial `uq_domicilio_activo`. Implementación en `backend/drizzle/schema/05-domicilio.ts`
+  + `relations.ts`.
+- [x] Verificación: segunda asignación activa rechazada; tras cerrar la primera se permite una
+  nueva; `ck_domicilio_sellos` exige `recogido_en` antes de `entregado_en`.
+- [ ] Seeds de zonas de cobertura demo.
 
 **Salida:** una asignación de domicilio recorre sus estados y no permite dos asignaciones activas
 para el mismo pedido.
@@ -137,16 +186,35 @@ Migraciones:
 - `0061_caja.sql`: `cierre_caja`.
 - `0062_facturacion.sql`: `factura`, `factura_linea`.
 
+Estado (2026-10-02):
+
+- [x] Migración `0005_pagos_caja_facturacion.sql` generada y aplicada: 5 tablas, 2 dominios
+  `pgEnum`, índices de pago/factura e invariantes de dinero con triggers (D-BD-16).
+  Implementación en `backend/drizzle/schema/06-pagos.ts` + `relations.ts`.
+- [x] Verificación: pago aprobado que excede el total rechazado; pedido no pasa a `pagado` sin
+  cobertura; con cobertura completa sí; numeración fiscal duplicada rechazada.
+- [ ] División de cuenta (`pago_linea`): el cuadre queda como validación de dominio en el backend.
+
 **Salida:** pruebas de **pago único** (la suma de pagos aprobados no supera el total y `pagado`
 exige cubrirlo), división de cuenta que cuadra, y numeración fiscal por prefijo sin repetir.
 
-### E7 — Notificaciones, marketing y CRM
+### E7 — Notificaciones y marketing
 
 Migraciones:
 
 - `0070_notificaciones.sql`: `plantilla_notificacion`, `notificacion`,
   `configuracion_notificacion`.
-- `0071_crm.sql`: `suscriptor`, `resena`, `encuesta`, `segmento_cliente`, `evento_analitica`.
+- `0071_marketing.sql`: `suscriptor`, `resena`, `encuesta`, `segmento_cliente`, `evento_analitica`
+  (renombrada de «crm» a «marketing» para no confundirla con el proyecto CRM externo; 2026-10-02).
+
+Estado (2026-10-02):
+
+- [x] Migración `0006_marketing.sql` generada y aplicada: 8 tablas, 5 dominios `pgEnum`, índice de
+  envío de notificaciones y trigger de sello en `segmento_cliente`. Implementación en
+  `backend/drizzle/schema/07-marketing.ts` + `relations.ts`.
+- [x] Verificación: plantilla duplicada rechazada; notificación enviada; encuesta única por
+  referencia; puntaje de reseña fuera de 1–5 rechazado.
+- [ ] Seeds de plantillas base por evento (confirmación, pedido listo, en camino, encuesta).
 
 **Salida:** plantillas base por evento (confirmación, listo, en camino, encuesta) y encuesta única
 por pedido.
@@ -161,25 +229,79 @@ Migraciones:
 - `0083_alertas_y_reportes.sql`: `alerta_operativa`, `umbral_alerta`, `reporte_guardado`,
   `reporte_programado`, `exportacion`, `trabajo_impresion`.
 
+Estado (2026-10-02):
+
+- [x] Migración `0007_operacion_trazabilidad.sql` generada y aplicada: 9 tablas, 12 dominios
+  `pgEnum`, `evento_auditoria` particionada por mes (4 particiones iniciales + DEFAULT,
+  `fn_crear_particion_auditoria`), trigger de inmutabilidad y `ix_encuesta_tipo` (pendiente de E7).
+  Implementación en `backend/drizzle/schema/08-operacion.ts` + `relations.ts`.
+- [x] Verificación: `client_op_id` repetido rechazado; filas de auditoría enrutadas a su partición;
+  `UPDATE`/`DELETE` bloqueados; función de partición idempotente; `ck_impresion_origen` y enums
+  validados.
+- [ ] Job de mantenimiento que crea particiones con antelación (fase de operación).
+- [ ] Permisos por rol (`app` sin `UPDATE`/`DELETE` sobre auditoría): pendiente con los usuarios de
+  base de datos de E0.
+
 **Salida:** reenvío de la misma operación offline no duplica nada; la auditoría no admite
 `UPDATE`/`DELETE` (permisos + trigger de bloqueo).
 
 ### E9 — Agregados y reportes (`analytics`)
 
-- [ ] Vistas materializadas: ventas por período/sede/canal/modalidad/producto; reservas y no-show;
-  tiempos de atención, preparación, despacho, ruta y cobro; cumplimiento de SLA; ocupación.
-- [ ] Jobs de refresco (programados) y rol `readonly` para BI.
-- [ ] Verificación de que los reportes no consultan la base operativa (RNF-R5-03).
+- [x] Vistas materializadas: ventas por período/sede/canal/modalidad y por producto; reservas y
+  no-show; tiempos de atención, preparación, comanda y cobro; SLA por estación; ocupación de
+  mesas; desempeño de meseros.
+- [ ] Jobs de refresco (programados) y rol `readonly` para BI: la función de refresco existe
+  (`analytics.fn_refrescar_analytics`); faltan el job programado, el rol de BI y, con ellos, los
+  usuarios de BD de E0.
+- [ ] Verificación de que los reportes no consultan la base operativa (RNF-R5-03): queda como
+  regla de revisión de las consultas del panel en E10.
+
+Estado (2026-10-02):
+
+- [x] Migración `0008_analytics.sql` (SQL manual; sin cambios en `drizzle/schema.ts`) aplicada:
+  esquema `analytics`, 8 vistas materializadas (`mv_ventas_diarias`, `mv_ventas_producto`,
+  `mv_reservas_diarias`, `mv_tiempos_pedido`, `mv_tiempos_comanda`, `mv_sla_estacion`,
+  `mv_ocupacion_mesa`, `mv_desempeno_mesero`), índices únicos para preparar el refresco
+  concurrente y `analytics.fn_refrescar_analytics()` (refresca en orden de dependencias).
+  Snapshot `0008_snapshot.json` y entrada `idx 8` del `_journal.json` elaborados a mano con el
+  formato de `drizzle-kit`, que no expresa vistas materializadas (ver D-BD-13).
+- [x] Verificación: 8/8 vistas pobladas; un pedido pagado de prueba aparece en `mv_ventas_diarias`
+  y `mv_tiempos_pedido` tras `fn_refrescar_analytics()`; datos de prueba eliminados y refresco
+  posterior en cero; `drizzle.__drizzle_migrations` con 9 entradas (`0000`–`0008`).
 
 **Salida:** un reporte de tiempos de un mes responde en segundos y cuadra con los sellos.
 
 ### E10 — Seeds, aceptación y desempeño
 
-- [ ] Seed demo: tenant + 1 sucursal + 20 mesas + carta + usuarios por rol + SLA + plantillas.
-- [ ] Suite de pruebas: migración desde cero, restricciones, máquinas de estado, idempotencia.
-- [ ] Pruebas de carga de las consultas críticas: tablero KDS, pedidos activos, comandas por
+- [x] Seed demo: tenant + 1 sucursal + 20 mesas + carta + usuarios por rol + SLA + plantillas.
+- [x] Suite de pruebas: migración desde cero, restricciones, máquinas de estado (lo que la base
+  garantiza), idempotencia.
+- [x] Pruebas de carga de las consultas críticas: tablero KDS, pedidos activos, comandas por
   estación, cierre de caja, reportes.
-- [ ] Simulacro de restauración (backup + PITR) documentado.
+- [x] Simulacro de restauración (respaldo lógico completo + restauración verificada).
+- [x] Usuarios de BD `migrator`/`app`/`readonly` (cierra los pendientes de E0/E8/E9).
+- [x] CI: Postgres+PostGIS efímero, migraciones desde cero, seed, build y suite.
+
+Estado (2026-10-02):
+
+- [x] `backend/scripts/seed.ts` (`yarn db:seed`): tenant, sucursal, 20 mesas, carta demo (12
+  productos con precios), 7 roles + 26 permisos, 8 usuarios con PIN, política de reserva, reglas
+  SLA, plantillas y umbrales, zonas de cobertura y dispositivos demo. Idempotente (UUID fijos +
+  `ON CONFLICT`); repetirlo no duplica ni pisa el PIN.
+- [x] `backend/scripts/test-db.ts` (`yarn db:test`): 28 pruebas en una transacción con `SAVEPOINT`s
+  y `ROLLBACK` final (la base no cambia). 28/28 en verde, incluida la migración desde cero.
+- [x] `backend/scripts/bench-db.ts` (`yarn db:bench`): 600 pedidos pagados de 30 días + 200
+  comandas activas + 150 reservas; KDS 0.09 ms, pedidos activos 0.02 ms, cierre de caja 0.74 ms,
+  reporte 0.14 ms, refresco de analytics 80 ms.
+- [x] `db/docker/roles.sql` (montado como `02_roles.sql`): `app` sin `UPDATE`/`DELETE` en
+  auditoría y con refresco de analytics; `readonly` solo `analytics`; verificado por conexión real.
+- [x] `db/docker/restore-drill.sh`: respaldo (624 KB) → restauración → verificación (9 migraciones,
+  72 tablas, 5 particiones, 8 vistas) → limpieza. Sin PITR local: se documenta como procedimiento
+  de producción.
+- [x] `.github/workflows/ci.yml`.
+- [ ] Pendientes fuera de alcance (job programado de refresco, mantenimiento de particiones,
+  transiciones de estado de la API, PITR/rotación de secretos): listados en
+  [`02-e10-aceptacion.md`](./02-e10-aceptacion.md) §6.
 
 **Salida:** base reproducible desde cero con un solo comando y todas las pruebas en verde.
 

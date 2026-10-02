@@ -174,7 +174,7 @@ Origen: `R1`…`R5` = documentos de `requerimientos/`; `RN` = reglas de negocio 
 
 | Tabla | Campos clave | Notas | Origen |
 |---|---|---|---|
-| `pago` | `pedido_id` o `reserva_id`, `medio_pago_id`, `monto_centavos`, `propina_centavos`, `referencia`, `estado`, `pasarela_payload`, `usuario_id`, `created_at` | Único para pedidos y depósitos de reserva | R1 R2 R3 R5 |
+| `pago` | `pedido_id` o `reserva_id`, `medio_pago_id`, `monto_centavos`, `propina_centavos`, `referencia`, `estado`, `pasarela_payload`, `usuario_id`, `creado_en` | Único para pedidos y depósitos de reserva | R1 R2 R3 R5 |
 | `pago_linea` | `pago_id`, `pedido_linea_id`, `monto_centavos` | División de cuenta por líneas | R2 R3 |
 | `turno` | `sucursal_id`, `numero`, `estado`, `abierto_en`, `cerrado_en`, `usuario_apertura_id`, `usuario_cierre_id` | Turno de caja y salón | R3 R5 |
 | `cierre_caja` | `turno_id`, `base_inicial_centavos`, `ventas_efectivo_centavos`, `ventas_otros_centavos`, `propinas_centavos`, `retiros_centavos`, `gastos_centavos`, `contado_centavos`, `diferencia_centavos`, `observaciones`, `reabierto_por`, `reabierto_en` | Reapertura auditada | R3 R5 |
@@ -204,8 +204,8 @@ Origen: `R1`…`R5` = documentos de `requerimientos/`; `RN` = reglas de negocio 
 | Tabla | Campos clave | Notas | Origen |
 |---|---|---|---|
 | `sync_operacion` | `dispositivo_id`, `client_op_id`, `tipo`, `payload`, `estado`, `aplicado_en`, `error` | Idempotencia offline | R3 |
-| `evento_auditoria` | `tenant_id`, `sucursal_id`, `usuario_id`, `dispositivo_id`, `entidad`, `entidad_id`, `accion`, `motivo`, `datos_antes`, `datos_despues`, `ip`, `request_id`, `created_at` | Inmutable | R3 R4 R5 |
-| `bitacora_evento` | `entidad_tipo`, `entidad_id`, `evento`, `actor`, `canal`, `dispositivo_id`, `datos`, `created_at` | Línea de tiempo de reservas y pedidos; materializa eventos y sellos | R5 |
+| `evento_auditoria` | `tenant_id`, `sucursal_id`, `usuario_id`, `dispositivo_id`, `entidad`, `entidad_id`, `accion`, `motivo`, `datos_antes`, `datos_despues`, `ip`, `request_id`, `creado_en` | Inmutable | R3 R4 R5 |
+| `bitacora_evento` | `entidad_tipo`, `entidad_id`, `evento`, `actor`, `canal`, `dispositivo_id`, `datos`, `creado_en` | Línea de tiempo de reservas y pedidos; materializa eventos y sellos | R5 |
 | `alerta_operativa` | `tipo`, `severidad`, `entidad`, `estado`, `atendida_por`, `atendida_en` | Impresoras, dispositivos, sync, SLA | R5 |
 | `umbral_alerta` | `tipo`, `valor`, `rol_destinatario` | Descuentos altos, anulaciones, reaperturas | R5 |
 | `reporte_guardado` | `usuario_id`, `nombre`, `tipo`, `filtros`, `visibilidad` | Vistas guardadas | R5 |
@@ -276,8 +276,8 @@ erDiagram
 - `UNIQUE (pedido_id)` en `encuesta` por tipo, y `UNIQUE (mesa_id, token)` en `sesion_mesa`.
 - Índices operativos: `pedido (sucursal_id, estado, creado_en)`, `comanda (estacion_id, estado)`,
   `pedido_linea (pedido_id)`, `comanda_linea (comanda_id)`.
-- Índices de control: `evento_auditoria (entidad, entidad_id, created_at)`,
-  `bitacora_evento (entidad_tipo, entidad_id, created_at)`, `sync_operacion (estado)`,
+- Índices de control: `evento_auditoria (entidad, entidad_id, creado_en)`,
+  `bitacora_evento (entidad_tipo, entidad_id, creado_en)`, `sync_operacion (estado)`,
   `trabajo_impresion (estado, creado_en)`.
 - Índice GIN en `zona_cobertura.geometria` si se adopta PostGIS.
 - `pago.monto_centavos > 0`; `pedido.total_centavos >= 0`; porcentajes entre 0 y 100.

@@ -26,8 +26,8 @@ CREATE TABLE producto (
   etiquetas            text[],                          -- vegetariano, sin_gluten, picante…
   activo               boolean NOT NULL DEFAULT true,
   destacado            boolean NOT NULL DEFAULT false,
-  created_at           timestamptz NOT NULL DEFAULT now(),
-  updated_at           timestamptz NOT NULL DEFAULT now()
+  creado_en           timestamptz NOT NULL DEFAULT now(),
+  actualizado_en           timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE producto_precio (
@@ -198,7 +198,7 @@ CREATE TABLE politica_reserva (
                            CHECK (deposito_regla IN ('no','siempre','grupos','fechas_especiales')),
   deposito_monto_centavos bigint CHECK (deposito_monto_centavos IS NULL OR deposito_monto_centavos > 0),
   no_show_regla          text,
-  updated_at             timestamptz NOT NULL DEFAULT now(),
+  actualizado_en             timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT ck_politica_rango CHECK (antelacion_min_horas <= antelacion_max_dias * 24)
 );
 
@@ -211,6 +211,7 @@ CREATE TABLE reserva (
   correo_contacto       text,
   fecha_hora            timestamptz NOT NULL,
   duracion_min          integer NOT NULL CHECK (duracion_min > 0),
+  periodo               tstzrange NOT NULL,   -- [fecha_hora, +duracion_min); trigger tg_reserva_periodo
   personas              smallint NOT NULL CHECK (personas > 0),
   zona_id               uuid REFERENCES zona(id),
   mesa_id               uuid REFERENCES mesa(id),
@@ -228,15 +229,16 @@ CREATE TABLE reserva (
   sentada_en            timestamptz,
   finalizada_en         timestamptz,
   no_show_en            timestamptz,
-  created_at            timestamptz NOT NULL DEFAULT now(),
-  updated_at            timestamptz NOT NULL DEFAULT now()
+  creado_en            timestamptz NOT NULL DEFAULT now(),
+  actualizado_en            timestamptz NOT NULL DEFAULT now()
 );
 
--- Bloqueo de solapes por mesa (requiere btree_gist).
+-- Bloqueo de solapes por mesa (requiere btree_gist). Opera sobre `periodo` porque
+-- `timestamptz + interval` es STABLE y no admite índices/EXCLUDE (D-BD-15).
 ALTER TABLE reserva ADD CONSTRAINT ex_reserva_mesa_solape
   EXCLUDE USING gist (
     mesa_id WITH =,
-    tstzrange(fecha_hora, fecha_hora + make_interval(mins => duracion_min)) WITH &&
+    periodo WITH &&
   )
   WHERE (estado IN ('solicitada','confirmada','sentada') AND mesa_id IS NOT NULL);
 
@@ -250,7 +252,7 @@ CREATE TABLE lista_espera (
   estado          text NOT NULL DEFAULT 'esperando'
                     CHECK (estado IN ('esperando','ofrecida','aceptada','expirada','cancelada')),
   vigencia_hasta  timestamptz,
-  created_at      timestamptz NOT NULL DEFAULT now()
+  creado_en      timestamptz NOT NULL DEFAULT now()
 );
 ```
 
@@ -268,6 +270,8 @@ CREATE INDEX ix_lista_espera_estado    ON lista_espera (sucursal_id, estado);
 - `producto.estacion_id` nulo equivale a la estación `99` del legado: **no genera comanda**.
 - El precio vigente de un producto en una sede es el `producto_precio` con mayor `vigente_desde`
   no futuro; los pedidos copian el precio (snapshot) y no dependen de esta tabla.
+- `reserva.periodo` es el rango `[fecha_hora, fecha_hora + duracion_min)` y lo materializa el
+  trigger `tg_reserva_periodo`; la exclusión de solapes opera sobre él (D-BD-15).
 - La exclusión de reservas solo aplica a reservas activas y con `mesa_id` asignado; las reservas
   sin mesa (solicitadas) no bloquean.
 - `servicio` de la mesa y su historial de ocupación se derivan de `sesion_mesa` y del pedido.

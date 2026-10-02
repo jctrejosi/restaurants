@@ -105,10 +105,18 @@ generada antes de aplicarla y se protegen de regeneraciones accidentales:
 |---|---|
 | `EXCLUDE USING gist` (solape de reservas por mesa y rango) | E3 (`reserva`) |
 | Particionado declarativo por rango mensual | E8 (`evento_auditoria`, `bitacora_evento`) |
-| Triggers de `updated_at` | todas las tablas mutables |
+| Triggers de `actualizado_en` | todas las tablas mutables |
 | `UNIQUE NULLS NOT DISTINCT` (PG16) | dónde aplique (p. ej. asignaciones activas) |
 | Índices con `public.immutable_unaccent(...)` y `pg_trgm` | catálogo (buscador) |
 | Función `public.immutable_unaccent` | `init.sql` del contenedor |
+| Esquema `analytics`: 8 vistas materializadas + `fn_refrescar_analytics()` | E9 (`0008_analytics.sql`) |
+
+> Nota (E9, 2026-10-02): `drizzle-kit` tampoco modela **vistas materializadas** ni conoce el
+> esquema `analytics` (no existe en `schema.ts`). El snapshot `0008_snapshot.json` se elaboró a
+> mano copiando el formato de `0007` (solo `id`/`prevId` nuevos, `schemas` vacío) para que
+> `drizzle-kit generate` siga respondiendo «No schema changes». Si un `generate` futuro propone
+> `DROP SCHEMA "analytics"` o `DROP MATERIALIZED VIEW`, debe descartarse: esa parte vive solo en
+> SQL manual. El `migrate`, en cambio, no lee snapshots y aplica `0008` con normalidad.
 
 ### Divergencias conscientes frente a `ecommerce`
 
@@ -137,7 +145,8 @@ docker exec restaurants_postgres psql -U postgres -d restaurants -c "\dx"
 cd ../../backend && yarn install
 
 # 4. Esquema → migración → aplicación
-yarn db:generate --name inicial   # genera SQL en drizzle/migrate/
+#    (tag por etapa; p. ej. `fundamentos` para E1)
+yarn db:generate --name <etapa>   # genera SQL en drizzle/migrate/
 yarn db:migrate                   # aplica contra localhost:5435
 
 # 5. API en desarrollo (http://localhost:3001, Swagger en /api/docs)
@@ -161,16 +170,19 @@ graph TD
 |---|---|---|
 | 1 | `db/docker/docker-compose.yml` + `init.sql` (extensiones + `btree_gist`) | Hecho (2026-10-02) |
 | 2 | Backend NestJS 11 + Drizzle (`backend/`, `DrizzleService`, health, `check-db`) | Hecho (2026-10-02) |
-| 3 | `backend/drizzle/schema.ts` + `relations.ts` (72 tablas de `esquema/01–04`) | Siguiente |
-| 4 | Primera migración generada y aplicada | Pendiente (depende de 3) |
-| 5 | Seeds base (tenant, sucursal, roles/permisos) | Pendiente (E1) |
+| 3 | `backend/drizzle/schema.ts` + `relations.ts` (72 tablas de `esquema/01–04`) | E1–E10 hechos (2026-10-02): módulos `schema/01`–`08` y `relations.ts` (72 tablas) + esquema `analytics` con 8 vistas materializadas en SQL manual (`0008_analytics.sql`) |
+| 4 | Primera migración generada y aplicada | Hecho para E1–E10: `0000`–`0008` aplicadas el 2026-10-02 |
+| 5 | Seeds base (tenant, sucursal, roles/permisos, carta demo, SLA) | Hecho (2026-10-02): `yarn db:seed` idempotente (`backend/scripts/seed.ts`) |
+| 6 | Usuarios de BD `migrator`/`app`/`readonly` | Hecho (2026-10-02): `db/docker/roles.sql` (permisos verificados) |
+| 7 | Suite de pruebas de BD + CI | Hecho (2026-10-02): `yarn db:test` (28/28) y `.github/workflows/ci.yml` |
+| 8 | Benchmark y simulacro de restauración | Hecho (2026-10-02): `yarn db:bench` y `db/docker/restore-drill.sh`; registro en [`plans/02-e10-aceptacion.md`](./plans/02-e10-aceptacion.md) |
 
 ## 7. Pendientes de documentación
 
-1. Convertir los DDL de [`esquema/01–04`](./esquema/README.md) de `text` + `CHECK` a `pgEnum`
-   (se hará junto con `schema.ts`, tabla por tabla).
-2. Ajustar el [plan de BD](./plans/01-plan-implementacion-base-de-datos.md) en lo relativo a
-   nombres de migración (pasan a ser tags de `drizzle-kit`).
-3. Definir `scripts/seed.ts` (roles/permisos base) y el script de migración de producción,
-   siguiendo `ecommerce/backend/scripts/`.
+1. `pgEnum` (D-BD-04): aplicado en E1–E8 (`schema/01`–`08`: 48 dominios).
+   Los DDL de [`esquema/01–04`](./esquema/README.md) se mantienen como especificación legible.
+2. Plan de BD: nombres de migración documentados como tags de `drizzle-kit` y estructura de
+   `drizzle/schema/` por módulos — hecho (2026-10-02).
+3. `scripts/seed.ts` (roles/permisos y datos demo) — hecho (2026-10-02, `yarn db:seed`); el script
+   de migración de producción sigue pendiente y depende del hosting (E0/A1–A3).
 4. Registrar estas decisiones como ADR cuando el cliente cierre A1–A3 (E0 del plan).

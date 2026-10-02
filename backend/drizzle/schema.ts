@@ -2,12 +2,20 @@
  * Esquema Drizzle de la base de datos operativa (`public`).
  *
  * Este archivo es la fuente única del esquema: materializa la especificación
- * de `docs/arquitectura/esquema/01–04` y se migra con `drizzle-kit`
+ * de `docs/arquitectura/esquema/` y se migra con `drizzle-kit`
  * (`yarn db:generate` / `yarn db:migrate`). Decisiones: D-BD-02/03/04 en
  * `docs/arquitectura/05-stack-tecnologico.md`.
  *
- * IMPORTANTE: se implementa por etapas (E1–E9 del plan de BD). Mientras no
- * existan tablas queda vacío a propósito, para que `import * as schema`
- * funcione en la capa de base de datos.
+ * Se implementa por etapas (E1–E9 del plan de BD) y se organiza en módulos
+ * por dominio (`drizzle/schema/NN-*.ts`) para evitar un archivo gigante; este
+ * archivo solo re-exporta tablas, enums y relaciones.
  */
-export {};
+export * from './schema/01-nucleo';
+export * from './schema/02-catalogo';
+export * from './schema/03-salon-reservas';
+export * from './schema/04-pedidos';
+export * from './schema/05-domicilio';
+export * from './schema/06-pagos';
+export * from './schema/07-marketing';
+export * from './schema/08-operacion';
+export * from './relations';

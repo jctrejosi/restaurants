@@ -28,7 +28,7 @@ CREATE TABLE notificacion (
                       CHECK (estado IN ('pendiente','enviada','fallida','cancelada')),
   enviado_en        timestamptz,
   error             text,
-  created_at        timestamptz NOT NULL DEFAULT now()
+  creado_en        timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE configuracion_notificacion (
@@ -42,7 +42,9 @@ CREATE TABLE configuracion_notificacion (
 );
 ```
 
-## 4.2 CRM y marketing
+## 4.2 Marketing (CRM ligero)
+
+Tablas propias del restaurante (RF-R1-40/42 y RF-R5-102/103); no es el proyecto CRM externo.
 
 ```sql
 CREATE TABLE suscriptor (
@@ -110,7 +112,7 @@ CREATE TABLE sync_operacion (
                     CHECK (estado IN ('pendiente','aplicada','rechazada')),
   aplicado_en     timestamptz,
   error           text,
-  created_at      timestamptz NOT NULL DEFAULT now(),
+  creado_en      timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT uq_sync_op UNIQUE (client_op_id)
 );
 ```
@@ -133,9 +135,9 @@ CREATE TABLE evento_auditoria (
   datos_despues  jsonb,
   ip             inet,
   request_id     text,
-  created_at     timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (id, created_at)
-) PARTITION BY RANGE (created_at);
+  creado_en     timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (id, creado_en)
+) PARTITION BY RANGE (creado_en);
 
 CREATE TABLE evento_auditoria_2026_10 PARTITION OF evento_auditoria
   FOR VALUES FROM ('2026-10-01') TO ('2026-11-01');
@@ -150,7 +152,7 @@ CREATE TABLE bitacora_evento (
   canal          text,
   dispositivo_id uuid REFERENCES dispositivo(id),
   datos          jsonb,
-  created_at     timestamptz NOT NULL DEFAULT now()
+  creado_en     timestamptz NOT NULL DEFAULT now()
 );
 ```
 
@@ -168,7 +170,7 @@ CREATE TABLE alerta_operativa (
                   CHECK (estado IN ('abierta','atendida','descartada')),
   atendida_por  uuid REFERENCES usuario(id),
   atendida_en   timestamptz,
-  created_at    timestamptz NOT NULL DEFAULT now()
+  creado_en    timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE umbral_alerta (
@@ -231,10 +233,10 @@ CREATE TABLE trabajo_impresion (
 ## 4.6 Índices y notas
 
 ```sql
-CREATE INDEX ix_notificacion_envio   ON notificacion (estado, created_at);
-CREATE INDEX ix_auditoria_entidad    ON evento_auditoria (entidad, entidad_id, created_at);
-CREATE INDEX ix_auditoria_usuario    ON evento_auditoria (usuario_id, created_at);
-CREATE INDEX ix_bitacora_entidad     ON bitacora_evento (entidad_tipo, entidad_id, created_at);
+CREATE INDEX ix_notificacion_envio   ON notificacion (estado, creado_en);
+CREATE INDEX ix_auditoria_entidad    ON evento_auditoria (entidad, entidad_id, creado_en);
+CREATE INDEX ix_auditoria_usuario    ON evento_auditoria (usuario_id, creado_en);
+CREATE INDEX ix_bitacora_entidad     ON bitacora_evento (entidad_tipo, entidad_id, creado_en);
 CREATE INDEX ix_sync_estado          ON sync_operacion (estado);
 CREATE INDEX ix_alerta_abierta       ON alerta_operativa (sucursal_id) WHERE estado = 'abierta';
 CREATE INDEX ix_impresion_cola       ON trabajo_impresion (estado, creado_en);

@@ -10,3 +10,6 @@ backend/coverage/
 **/.env
 **/.env.*
 !**/.env.example
+
+# Respaldos del simulacro de restauración
+**/respaldo_drill_*.dump
