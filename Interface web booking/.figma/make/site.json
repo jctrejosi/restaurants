@@ -1,0 +1,10 @@
+{
+  "description": "Facilita a los usuarios reservar mesas en restaurantes de forma rápida y sencilla, optimizando la gestión de reservas para clientes y establecimientos.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

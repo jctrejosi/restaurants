@@ -1,0 +1,10 @@
+{
+  "description": "Manage restaurant reservations and orders efficiently with this user-friendly admin panel, designed for restaurant staff to enhance service and streamline operations.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

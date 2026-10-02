@@ -1,0 +1,10 @@
+{
+  "description": "Displays incoming restaurant table orders on a kitchen TV to streamline order management and improve communication between staff.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

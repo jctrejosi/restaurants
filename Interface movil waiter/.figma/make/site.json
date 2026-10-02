@@ -1,0 +1,10 @@
+{
+  "description": "Enables waiters to efficiently take and manage customer orders via a mobile app, streamlining service and improving order accuracy in restaurants.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

@@ -231,6 +231,14 @@ export default function App() {
         <div className="footer-bottom"><span>© 2026 Punto C</span><div><AppLink href="#privacidad">Privacidad</AppLink><AppLink href="#cookies">Cookies</AppLink><AppLink href="#terminos">Términos</AppLink></div></div>
       </footer>
 
+      <aside className="mobile-booking-bar" aria-label="Acceso rápido a reservas">
+        <div>
+          <span>Mesas disponibles</span>
+          <strong>Reserva en menos de 1 min</strong>
+        </div>
+        <Button className="primary" onClick={openBooking}>Reservar <Icon name="arrow" size={17}/></Button>
+      </aside>
+
       {bookingOpen && <div className="modal-backdrop" onMouseDown={() => setBookingOpen(false)}>
         <section aria-labelledby="booking-title" aria-modal="true" className="booking-modal" onMouseDown={(e) => e.stopPropagation()} role="dialog">
           <Button className="modal-close" onClick={() => setBookingOpen(false)}><Icon name="close"/><span className="sr-only">Cerrar</span></Button>
