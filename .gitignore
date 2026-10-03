@@ -13,3 +13,6 @@ backend/coverage/
 
 # Respaldos del simulacro de restauración
 **/respaldo_drill_*.dump
+
+# Logs y PIDs del lanzador dev.js
+logs/
