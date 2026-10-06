@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Icon from "./Icon";
+import CheckoutAddressMap, { type AddressCoords } from "./CheckoutAddressMap";
 
 export type CheckoutItem = {
   id: number;
@@ -48,6 +49,8 @@ export default function Checkout({
 }) {
   const [step, setStep] = useState(1);
   const [address, setAddress] = useState<Address>({ name: "", phone: "", email: "", address: "", city: "", notes: "" });
+  const [coords, setCoords] = useState<AddressCoords | null>(null);
+  const [addressConfirmed, setAddressConfirmed] = useState(false);
   const [payment, setPayment] = useState<PaymentKey>("efectivo");
   const [card, setCard] = useState({ cardholderName: "", cardNumber: "", expiry: "", cvv: "" });
   const [acceptance, setAcceptance] = useState({ terms: false, personalData: false });
@@ -72,7 +75,10 @@ export default function Checkout({
     acceptance.personalData;
   const paymentReady = payment === "tarjeta" ? cardReady : true;
 
-  const update = (key: keyof Address, value: string) => setAddress((prev) => ({ ...prev, [key]: value }));
+  const update = (key: keyof Address, value: string) => {
+    setAddress((prev) => ({ ...prev, [key]: value }));
+    if (key === "address" || key === "city") setAddressConfirmed(false);
+  };
 
   const handleCardNumber = (value: string) =>
     setCard((prev) => ({
@@ -188,7 +194,18 @@ export default function Checkout({
                 );
               })}
             </div>
-            <button className="co-primary" disabled={!addressReady} onClick={() => setStep(3)}>Continuar con el pago →</button>
+            <CheckoutAddressMap
+              coords={coords}
+              confirmed={addressConfirmed}
+              onCoordsChange={setCoords}
+              onConfirmChange={setAddressConfirmed}
+              addressQuery={[address.address, address.city].filter(Boolean).join(", ")}
+              onResolvedAddress={({ address: resolvedAddress, city }) =>
+                setAddress((prev) => ({ ...prev, address: resolvedAddress || prev.address, city: city || prev.city }))
+              }
+            />
+            {!addressConfirmed && <p className="co-map-note">Confirma tu ubicación en el mapa para continuar.</p>}
+            <button className="co-primary" disabled={!addressReady || !addressConfirmed} onClick={() => setStep(3)}>Continuar con el pago →</button>
           </>
         )}
 

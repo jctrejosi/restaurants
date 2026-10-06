@@ -374,3 +374,28 @@ h1, h2 { font-family: "Fraunces", serif; }
   .order-code-text { display: none; }
   .order-code input { width: 46px; }
 }
+
+/* ===== Mapa de dirección (checkout) ===== */
+.co-map-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.co-map-head { display: flex; flex-direction: column; gap: 4px; }
+.co-map-hint { color: var(--muted); font-size: 11.5px; margin: 0; }
+.co-map { height: 260px; border-radius: 12px; overflow: hidden; background: #e8dfd3; }
+.co-map .maplibregl-ctrl-attrib { font-size: 10px; }
+.co-map-actions { display: flex; gap: 8px; }
+.co-map-action { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: #faf6ef; color: var(--ink); border-radius: 10px; padding: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.co-map-action:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); }
+.co-map-action:disabled { opacity: .5; cursor: not-allowed; }
+.co-map-status { font-size: 12px; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 20px; }
+.co-map-resolving { display: inline-flex; align-items: center; gap: 6px; }
+.co-map-resolved { display: flex; align-items: flex-start; gap: 6px; min-width: 0; flex: 1; }
+.co-map-resolved svg { flex: none; margin-top: 1px; color: var(--orange); }
+.co-map-resolved span { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.co-map-use { flex: none; border: 0; background: transparent; color: var(--orange); font-size: 11.5px; font-weight: 700; cursor: pointer; text-decoration: underline; white-space: nowrap; }
+.co-map-confirm { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 1px dashed var(--line); background: transparent; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--muted); }
+.co-map-confirm.done { border-style: solid; border-color: #4d7849; background: #e4efe0; color: #4d7849; }
+.co-map-note { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
+
+@media (max-width: 520px) {
+  .co-map { height: 220px; }
+  .co-map-actions { flex-direction: column; }
+}
