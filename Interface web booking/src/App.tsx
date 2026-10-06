@@ -1,4 +1,11 @@
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useMemo, useState } from "react";
+import Icon from "./components/Icon";
+import Calendar from "./components/Calendar";
+import DateField from "./components/DateField";
+import TimeField from "./components/TimeField";
+import TimeSlots from "./components/TimeSlots";
+import { addMonths, formatLongDate, toISODate, todayISO } from "./lib/dates";
+import { getAvailabilityCount, getSlots, reservationCode } from "./lib/availability";
 
 const photos = {
   hero: "https://images.unsplash.com/photo-1700625914939-30bf5479e3bc?auto=format&fit=crop&w=1800&q=88",
@@ -8,52 +15,20 @@ const photos = {
   dining: "https://images.unsplash.com/photo-1706267701248-fbbeeb1f8c7c?auto=format&fit=crop&w=1200&q=84",
 };
 
-type IconName =
-  | "arrow"
-  | "calendar"
-  | "check"
-  | "chevron"
-  | "clock"
-  | "close"
-  | "map"
-  | "menu"
-  | "minus"
-  | "people"
-  | "phone"
-  | "plus"
-  | "star";
-
-function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
-  const paths: Record<IconName, ReactNode> = {
-    arrow: <><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></>,
-    calendar: <><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></>,
-    check: <path d="m5 12 4 4L19 6"/>,
-    chevron: <path d="m9 18 6-6-6-6"/>,
-    clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
-    close: <><path d="m6 6 12 12M18 6 6 18"/></>,
-    map: <><path d="m9 18-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/></>,
-    menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
-    minus: <path d="M5 12h14"/>,
-    people: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
-    phone: <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.33 1.84.56 2.8.69A2 2 0 0 1 22 16.92Z"/>,
-    plus: <><path d="M12 5v14M5 12h14"/></>,
-    star: <path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.2L5.8 21 7 14.2l-5-4.9 6.9-1L12 2Z"/>,
-  };
-  return <svg aria-hidden="true" className="icon" fill="none" height={size} viewBox="0 0 24 24" width={size}>{paths[name]}</svg>;
-}
-
 function Button({
   children,
   className = "",
   onClick,
   type = "button",
+  disabled = false,
 }: {
   children: ReactNode;
   className?: string;
   onClick?: () => void;
   type?: "button" | "submit";
+  disabled?: boolean;
 }) {
-  return <button className={`button ${className}`} onClick={onClick} type={type}>{children}</button>;
+  return <button className={`button ${className}`} disabled={disabled} onClick={onClick} type={type}>{children}</button>;
 }
 
 function AppLink({ children, className = "", href }: { children: ReactNode; className?: string; href: string }) {
@@ -72,12 +47,21 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [people, setPeople] = useState(2);
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("20:00");
+  const [time, setTime] = useState("");
   const [bookingOpen, setBookingOpen] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
-  const today = new Date();
-  const minDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  const minDate = todayISO();
+  const maxDate = toISODate(addMonths(new Date(), 3));
+  const slots = useMemo(() => (date ? getSlots(date) : []), [date]);
+
+  function chooseDate(iso: string) {
+    setDate(iso);
+    // Drop a previously chosen time if it is no longer available that day.
+    setTime((current) =>
+      current && getSlots(iso).some((slot) => slot.time === current && slot.available) ? current : "",
+    );
+  }
 
   function openBooking() {
     setBookingOpen(true);
@@ -87,7 +71,7 @@ export default function App() {
 
   function submitBooking(event: FormEvent) {
     event.preventDefault();
-    if (date) setConfirmed(true);
+    if (date && time) setConfirmed(true);
   }
 
   return (
@@ -134,15 +118,16 @@ export default function App() {
             </div>
           </div>
 
-          <form className="quick-booking" onSubmit={submitBooking}>
-            <label><span><Icon name="calendar" size={18}/> Fecha</span>
-              <input aria-label="Fecha de reserva" min={minDate} onChange={(e) => setDate(e.target.value)} required type="date" value={date}/>
-            </label>
-            <label><span><Icon name="clock" size={18}/> Hora</span>
-              <select aria-label="Hora de reserva" onChange={(e) => setTime(e.target.value)} value={time}>
-                <option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option>
-              </select>
-            </label>
+          <form className="quick-booking" onSubmit={(event) => { event.preventDefault(); openBooking(); }}>
+            <DateField
+              availability={getAvailabilityCount}
+              className="qb-field"
+              max={maxDate}
+              min={minDate}
+              onChange={chooseDate}
+              value={date}
+            />
+            <TimeField className="qb-field" date={date} onChange={setTime} slots={slots} value={time}/>
             <label><span><Icon name="people" size={18}/> Personas</span>
               <select aria-label="Número de personas" onChange={(e) => setPeople(Number(e.target.value))} value={people}>
                 {[1,2,3,4,5,6,7,8].map((n) => <option key={n} value={n}>{n} {n === 1 ? "persona" : "personas"}</option>)}
@@ -245,20 +230,31 @@ export default function App() {
           {!confirmed ? <>
             <span className="eyebrow">Reserva rápida</span>
             <h2 id="booking-title">¿Cuándo quieres venir?</h2>
-            <p>Encuentra tu mesa en menos de un minuto.</p>
+            <p>Elige el día, la hora y cuántos son. Encuentra tu mesa en menos de un minuto.</p>
             <form onSubmit={submitBooking}>
-              <label>Fecha<input min={minDate} onChange={(e) => setDate(e.target.value)} required type="date" value={date}/></label>
-              <label>Hora<select onChange={(e) => setTime(e.target.value)} value={time}><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option></select></label>
+              <Calendar
+                availability={getAvailabilityCount}
+                max={maxDate}
+                min={minDate}
+                onChange={chooseDate}
+                value={date}
+              />
+              <div className="booking-time">
+                <span className="slot-section-label">Hora{time && <em> · {people} {people === 1 ? "persona" : "personas"}</em>}</span>
+                {date
+                  ? <TimeSlots onChange={setTime} slots={slots} value={time}/>
+                  : <p className="slot-hint">Elige un día para ver los horarios disponibles.</p>}
+              </div>
               <div className="party-control"><span>Personas</span><div><Button onClick={() => setPeople(Math.max(1, people - 1))}><Icon name="minus"/></Button><strong>{people}</strong><Button onClick={() => setPeople(Math.min(8, people + 1))}><Icon name="plus"/></Button></div></div>
-              <Button className="primary large full" type="submit">Ver disponibilidad <Icon name="arrow"/></Button>
+              <Button className="primary large full" disabled={!date || !time} type="submit">Confirmar reserva <Icon name="arrow"/></Button>
+              <small>{date && time ? "Cancelación flexible · Sin registro" : "Elige un día y una hora para continuar"}</small>
             </form>
-            <small>Cancelación flexible · Sin registro</small>
           </> : <div className="confirmation">
             <div className="confirmation-icon"><Icon name="check" size={30}/></div>
-            <span className="eyebrow">Disponibilidad encontrada</span>
+            <span className="eyebrow">Reserva confirmada</span>
             <h2 id="booking-title">Tu mesa está lista</h2>
-            <p>{date} · {time} · {people} {people === 1 ? "persona" : "personas"}</p>
-            <div className="confirmation-code"><span>Código de reserva</span><strong>PC-4F7K2</strong></div>
+            <p>{formatLongDate(date)} · {time} · {people} {people === 1 ? "persona" : "personas"}</p>
+            <div className="confirmation-code"><span>Código de reserva</span><strong>{reservationCode(date, time, people)}</strong></div>
             <Button className="primary large full" onClick={() => setBookingOpen(false)}>Terminar</Button>
           </div>}
         </section>
