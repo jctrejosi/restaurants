@@ -1,0 +1,344 @@
+/* Estilos propios del módulo Promociones (plan 08). */
+
+.promo-acciones {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Formulario y previsualización                                       */
+/* ------------------------------------------------------------------ */
+
+.promo-preview {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--panel-alt);
+  margin-top: 8px;
+}
+
+.promo-preview img,
+.promo-preview__placeholder {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px dashed var(--line-strong);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.promo-preview__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.promo-preview__cuerpo p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.promo-preview__cuerpo small {
+  color: var(--muted);
+}
+
+.promo-preview__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cupones                                                             */
+/* ------------------------------------------------------------------ */
+
+.cupon-uso {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 120px;
+}
+
+.cupon-uso__track {
+  display: block;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.cupon-uso__fill {
+  display: block;
+  height: 100%;
+  background: var(--leaf);
+}
+
+.cupon-uso__fill--agotado {
+  background: var(--red);
+}
+
+.cupon-uso small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.promo-cupon-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.promo-detalle-lista {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.promo-detalle-lista div {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+.promo-detalle-lista dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.promo-detalle-lista dd {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Newsletter                                                          */
+/* ------------------------------------------------------------------ */
+
+.promo-newsletter {
+  display: grid;
+  gap: 16px;
+}
+
+.promo-envio-resumen {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.promo-envio-resumen .button {
+  margin-left: auto;
+}
+
+.promo-envio-error {
+  color: var(--red);
+  font-size: 12px;
+  max-width: 260px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reseñas                                                             */
+/* ------------------------------------------------------------------ */
+
+.promo-resenas {
+  display: grid;
+  gap: 16px;
+}
+
+.promo-resenas__lista {
+  display: grid;
+  gap: 12px;
+  padding: 4px 0 8px;
+}
+
+.promo-resena {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.promo-resena__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.promo-resena__comentario {
+  margin: 8px 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.promo-resena__auditoria {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.promo-resena__acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.promo-puntaje {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.promo-puntaje strong {
+  margin-left: 5px;
+  color: var(--text);
+}
+
+.promo-puntaje__llena {
+  color: var(--gold);
+  fill: var(--gold);
+}
+
+.promo-puntaje__vacia {
+  color: var(--line-strong);
+}
+
+.promo-encuestas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  padding: 4px 0 10px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Métricas UTM                                                        */
+/* ------------------------------------------------------------------ */
+
+.promo-utm {
+  display: grid;
+  gap: 16px;
+}
+
+.promo-utm__bar {
+  display: block;
+  width: 140px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.promo-utm__bar span {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reutilizados del formulario (cada módulo carga su CSS)              */
+/* ------------------------------------------------------------------ */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 14px;
+}
+
+.form-grid__ancho {
+  grid-column: 1 / -1;
+}
+
+.check-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.check-inline input[type="checkbox"] {
+  accent-color: var(--brand);
+  width: 15px;
+  height: 15px;
+}
+
+.product-form__paso {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.product-form__footer-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.product-form__seccion {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  background: var(--panel-alt);
+}
+
+.notice--warn {
+  background: var(--amber-soft);
+  border-color: rgba(168, 93, 8, 0.25);
+  color: #6b3c04;
+}
+
+.notice--ok {
+  background: var(--leaf-soft);
+  border-color: rgba(74, 107, 63, 0.25);
+  color: #2f4a27;
+}
+
+.notice--error {
+  background: var(--red-soft);
+  border-color: rgba(179, 38, 30, 0.25);
+  color: #7c1d18;
+}
+
+@media (max-width: 720px) {
+  .promo-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .promo-detalle-lista div {
+    grid-template-columns: 1fr;
+  }
+}

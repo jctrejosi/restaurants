@@ -1,0 +1,219 @@
+/* Estilos propios del módulo Estaciones e impresoras (plan 07). */
+
+.est-impresoras,
+.est-sla,
+.est-diag {
+  display: grid;
+  gap: 16px;
+}
+
+.module-notice--warn {
+  background: var(--amber-soft);
+  border-color: rgba(168, 93, 8, 0.25);
+  color: #6b3c04;
+}
+
+/* ------------------------------------------------------------------ */
+/* Selector de productos                                               */
+/* ------------------------------------------------------------------ */
+
+.picker-busqueda {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  min-width: 240px;
+}
+
+.picker-busqueda .input {
+  flex: 1;
+}
+
+.picker-lista {
+  display: grid;
+  gap: 4px;
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px;
+  background: var(--panel-alt);
+}
+
+.picker-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.picker-fila:hover {
+  background: var(--panel);
+}
+
+.picker-fila--activa {
+  background: var(--brand-soft);
+}
+
+.picker-fila input[type="checkbox"] {
+  accent-color: var(--brand);
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.picker-fila__nombre {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.picker-fila__nombre small {
+  font-weight: 400;
+}
+
+/* ------------------------------------------------------------------ */
+/* SLA                                                                 */
+/* ------------------------------------------------------------------ */
+
+.est-sla__input {
+  max-width: 120px;
+}
+
+.est-sla__input .input {
+  width: 110px;
+}
+
+.est-copias .input {
+  width: 84px;
+}
+
+.est-aviso {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--amber);
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.est-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--leaf);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Diagnóstico                                                         */
+/* ------------------------------------------------------------------ */
+
+.est-diag__grid {
+  display: grid;
+  gap: 16px;
+}
+
+.est-diag__card .panel__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.est-diag__acciones {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.est-diag__error {
+  color: var(--red);
+  font-size: 12px;
+  max-width: 260px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reutilizados del formulario (cada módulo carga su CSS)              */
+/* ------------------------------------------------------------------ */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 14px;
+}
+
+.check-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.check-inline input[type="checkbox"] {
+  accent-color: var(--brand);
+  width: 15px;
+  height: 15px;
+}
+
+.product-form__paso {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.product-form__footer-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.product-form__seccion {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.product-form__seccion-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  background: var(--panel-alt);
+}
+
+.notice--warn {
+  background: var(--amber-soft);
+  border-color: rgba(168, 93, 8, 0.25);
+  color: #6b3c04;
+}
+
+.notice--ok {
+  background: var(--leaf-soft);
+  border-color: rgba(74, 107, 63, 0.25);
+  color: #2f4a27;
+}
+
+.notice--error {
+  background: var(--red-soft);
+  border-color: rgba(179, 38, 30, 0.25);
+  color: #7c1d18;
+}

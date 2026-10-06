@@ -1,0 +1,483 @@
+/* ==========================================================================
+   Módulo 04 · Comandas — estilos propios (monitor, SLA y excepciones)
+   Reutiliza tokens y utilidades de `src/index.css`.
+   ========================================================================== */
+
+.comandas-panel__body {
+  padding: 14px 17px 17px;
+}
+
+.comandas-panel__updated {
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Monitor por estación ---------------------------------------------------- */
+
+.comandas-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.comandas-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.comandas-legend__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.comandas-legend__dot--normal {
+  background: var(--leaf);
+}
+
+.comandas-legend__dot--por_vencer {
+  background: var(--amber);
+}
+
+.comandas-legend__dot--vencida {
+  background: var(--red);
+}
+
+.comandas-legend__count {
+  margin-left: auto;
+  font-size: 10px;
+}
+
+.comandas-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 12px;
+}
+
+.comanda-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px 13px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: box-shadow 130ms ease, transform 130ms ease, background 130ms ease;
+}
+
+.comanda-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.comanda-card--normal {
+  border-left-color: var(--leaf);
+}
+
+.comanda-card--por_vencer {
+  border-left-color: var(--amber);
+  background: linear-gradient(180deg, var(--amber-soft), var(--panel) 55%);
+}
+
+.comanda-card--vencida {
+  border-left-color: var(--red);
+  background: linear-gradient(180deg, var(--red-soft), var(--panel) 55%);
+}
+
+.comanda-card--urgente {
+  outline: 1px dashed rgba(168, 93, 8, 0.5);
+  outline-offset: -3px;
+}
+
+.comanda-card--skeleton {
+  cursor: default;
+  min-height: 128px;
+  border-left-color: var(--line);
+}
+
+.comanda-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.comanda-card__num {
+  color: var(--ink);
+  font: 700 15px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: -0.02em;
+}
+
+.comanda-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.comanda-card__dot {
+  color: var(--muted-light);
+}
+
+.comanda-card__station {
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.comanda-card__times {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.comanda-card__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 17px;
+}
+
+.comanda-card__time svg {
+  color: var(--muted-light);
+}
+
+.comanda-card__time .duration {
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+
+.comanda-card__sla {
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.comanda-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.comanda-card__lines {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.comanda-card__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--amber);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Detalle (drawer) -------------------------------------------------------- */
+
+.comandas-drawer__spacer {
+  flex: 1;
+}
+
+.comandas-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comandas-detail__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.comandas-detail__time {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.comandas-detail__time .duration {
+  font-size: 16px;
+}
+
+.comandas-detail__muted {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.comandas-detail__alert {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(168, 93, 8, 0.35);
+  border-radius: 9px;
+  background: var(--amber-soft);
+  color: #7a4a06;
+  font-size: 12px;
+}
+
+.comandas-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+  margin: 0;
+}
+
+.comandas-detail__grid > div {
+  min-width: 0;
+}
+
+.comandas-detail__grid dt {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.comandas-detail__grid dd {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.comandas-detail__section {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.comandas-detail__title {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.comandas-detail__error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  color: var(--red);
+  font-size: 11px;
+}
+
+.comandas-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comandas-timeline li {
+  display: grid;
+  grid-template-columns: 14px 90px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.comandas-timeline__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--leaf);
+  box-shadow: 0 0 0 3px var(--leaf-soft);
+}
+
+.comandas-timeline--muted .comandas-timeline__dot {
+  background: var(--muted-light);
+  box-shadow: 0 0 0 3px #ece8e4;
+}
+
+.comandas-timeline__label {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.comandas-timeline__value {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.comandas-print {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+}
+
+.comandas-print > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.comandas-print strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.comandas-alerts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comandas-alerts li {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-alt);
+  font-size: 12px;
+}
+
+.comandas-alerts svg {
+  color: var(--amber);
+}
+
+/* SLA del turno ----------------------------------------------------------- */
+
+.sla-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sla-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sla-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.sla-card {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.sla-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sla-card__head strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.sla-card__pct {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sla-card--good .sla-card__pct {
+  color: var(--leaf);
+}
+
+.sla-card--warn .sla-card__pct {
+  color: var(--amber);
+}
+
+.sla-card--bad .sla-card__pct {
+  color: var(--red);
+}
+
+.sla-card__gauge {
+  height: 7px;
+  margin: 9px 0 12px;
+  border-radius: 999px;
+  background: #ece8e4;
+  overflow: hidden;
+}
+
+.sla-card__gauge span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--leaf);
+}
+
+.sla-card--warn .sla-card__gauge span {
+  background: var(--amber);
+}
+
+.sla-card--bad .sla-card__gauge span {
+  background: var(--red);
+}
+
+.sla-card__data {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px 12px;
+  margin: 0;
+}
+
+.sla-card__data dt {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sla-card__data dd {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Excepciones ------------------------------------------------------------- */
+
+.excepciones-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .comandas-detail__grid,
+  .comandas-print {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

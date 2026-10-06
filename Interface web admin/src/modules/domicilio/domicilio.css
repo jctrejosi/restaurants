@@ -1,0 +1,518 @@
+/* ==========================================================================
+   Módulo Domicilio — estilos propios (reutiliza el resto del prototipo)
+   ========================================================================== */
+
+.module-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.module-toolbar--wrap {
+  flex-wrap: wrap;
+}
+
+.module-toolbar__spacer {
+  flex: 1;
+}
+
+.module-toolbar .field {
+  min-width: 150px;
+}
+
+.domicilio-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+/* Utilidades de tabla usadas por el seguimiento (definidas aquí para que el
+   módulo no dependa del CSS de otros módulos). */
+.cell-wrap {
+  white-space: normal;
+  min-width: 200px;
+}
+
+.linea-nombre {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.linea-notas {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.pedidos-paginacion {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pedidos-paginacion__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.domicilio-notice {
+  margin: 0 0 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--blue);
+  border-radius: 8px;
+  background: var(--blue-soft);
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.domicilio-alert {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.domicilio-alert--late {
+  border-color: #edd5ab;
+  background: var(--amber-soft);
+  color: #7a4708;
+}
+
+.domicilio-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.form-error {
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid #f0c8c4;
+  border-radius: 8px;
+  background: var(--red-soft);
+  color: var(--red);
+  font-size: 11px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Zonas                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.zone-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.zone-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.zone-form__sketch {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--panel-alt);
+}
+
+.zone-form__sketch-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.zone-form__sketch-head strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.zone-form__sketch-head span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.zone-sketch {
+  width: 100%;
+  display: block;
+}
+
+.zone-sketch__grid {
+  stroke: rgba(214, 208, 201, 0.55);
+  stroke-width: 0.3;
+}
+
+.zone-sketch__area {
+  fill: rgba(180, 69, 31, 0.16);
+  stroke: var(--brand);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.zone-sketch__punto {
+  fill: var(--brand-dark);
+}
+
+.zone-sketch--empty {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  background: white;
+}
+
+.zone-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zone-cell .zone-sketch {
+  width: 64px;
+  flex: 0 0 64px;
+}
+
+.zone-cell small {
+  color: var(--muted);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Repartidores — menú de fila                                                 */
+/* -------------------------------------------------------------------------- */
+
+.row-menu {
+  position: relative;
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.row-menu__panel {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 40;
+  min-width: 168px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  box-shadow: var(--shadow-md);
+}
+
+.row-menu__panel button {
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  color: var(--text);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.row-menu__panel button:hover:not(:disabled) {
+  background: var(--panel-alt);
+  color: var(--ink);
+}
+
+.row-menu__panel button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.row-menu__danger {
+  color: var(--red) !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Detalle de entrega                                                          */
+/* -------------------------------------------------------------------------- */
+
+.drawer-entity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer-entity__tiempo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.drawer-entity__tiempo > span {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.entrega-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.entrega-datos > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.entrega-datos strong {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.entrega-datos span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.entrega-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.entrega-acciones .button {
+  min-height: 32px;
+  font-size: 11px;
+}
+
+.entrega-seccion {
+  margin: 16px 0 10px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.entrega-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0 0;
+}
+
+.entrega-timeline__item {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 0 0 15px 2px;
+}
+
+.entrega-timeline__item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+
+.entrega-timeline__dot {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+  margin-top: 3px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+
+.entrega-timeline__dot--green {
+  background: #5d8a4f;
+}
+
+.entrega-timeline__dot--blue {
+  background: #4b86a8;
+}
+
+.entrega-timeline__dot--amber {
+  background: var(--gold);
+}
+
+.entrega-timeline__dot--gray {
+  background: #a49c95;
+}
+
+.entrega-timeline__item strong {
+  display: block;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.entrega-timeline__item span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.entrega-timeline__item p {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 11px;
+}
+
+.entrega-evidencia {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-alt);
+}
+
+.entrega-evidencia strong {
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.entrega-evidencia a {
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.entrega-evidencia small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Asignación                                                                  */
+/* -------------------------------------------------------------------------- */
+
+.modal--wide {
+  width: min(640px, 94vw);
+}
+
+.asignar-candidatos {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.asignar-candidato {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.asignar-candidato:hover {
+  border-color: var(--brand);
+}
+
+.asignar-candidato--activo {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.asignar-candidato__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.asignar-candidato__head strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.asignar-candidato small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive                                                                  */
+/* -------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .domicilio-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .zone-form__grid,
+  .entrega-datos {
+    grid-template-columns: 1fr;
+  }
+
+  .module-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .module-toolbar__spacer {
+    display: none;
+  }
+}

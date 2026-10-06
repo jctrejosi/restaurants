@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Icon, { type IconName } from "./Icon";
 import Checkout, { type CheckoutItem } from "./Checkout";
+import dsiLogo from "./assets/logo.png";
 
 type PickupOrder = {
   code: string;
@@ -64,7 +65,7 @@ const branches = [
 
 export default function App() {
   const [activeCategory, setActiveCategory] = useState("Favoritos");
-  const [mode, setMode] = useState("Domicilio");
+  const [mode, setMode] = useState("En tienda");
   const [branchId, setBranchId] = useState(branches[0].id);
   const [branchOpen, setBranchOpen] = useState(false);
   const [cart, setCart] = useState<Record<number, number>>({ 1: 2 });
@@ -83,6 +84,7 @@ export default function App() {
     }
   });
   const [codeQuery, setCodeQuery] = useState("");
+  const [codeModalOpen, setCodeModalOpen] = useState(false);
   const [lookup, setLookup] = useState<{ code: string; order: PickupOrder | null } | null>(null);
   const [query, setQuery] = useState("");
   const [searchFocus, setSearchFocus] = useState(false);
@@ -113,9 +115,9 @@ export default function App() {
   const showSearchResults = searchFocus && query.trim().length > 0;
 
   useEffect(() => {
-    document.body.style.overflow = selected || cartOpen || checkoutOpen || pickupNotice || lookup ? "hidden" : "";
+    document.body.style.overflow = selected || cartOpen || checkoutOpen || pickupNotice || lookup || codeModalOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [selected, cartOpen, checkoutOpen, pickupNotice, lookup]);
+  }, [selected, cartOpen, checkoutOpen, pickupNotice, lookup, codeModalOpen]);
 
   useEffect(() => {
     try {
@@ -205,6 +207,7 @@ export default function App() {
   const lookupOrderCode = () => {
     const code = codeQuery.trim();
     if (!code) return;
+    setCodeModalOpen(false);
     setLookup({ code, order: pickupOrders[code] ?? null });
   };
 
@@ -225,6 +228,8 @@ export default function App() {
     <div className="app-shell">
       <header className="topbar">
         <button className="brand" aria-label="Ir al inicio">
+          <img className="brand-partner" src={dsiLogo} alt="DSI S.A." />
+          <span className="brand-divider" aria-hidden="true" />
           <span className="brand-mark">C</span>
           <span>
             <strong>PUNTO C</strong>
@@ -281,6 +286,10 @@ export default function App() {
               <Icon name="arrow" size={14} />
             </button>
           </form>
+          <button className="order-code-btn" onClick={() => setCodeModalOpen(true)} aria-label="Consultar pedido">
+            <Icon name="receipt" size={16} />
+            <span>Consultar pedido</span>
+          </button>
           <button className="cart-top" onClick={() => setCartOpen(true)} aria-label={`Abrir carrito con ${cartCount} productos`}>
             <Icon name="bag" />
             <span>{cartCount}</span>
@@ -310,8 +319,8 @@ export default function App() {
           </div>
           <div className="mode-switch" role="radiogroup" aria-label="Modalidad de pedido">
             {[
-              { label: "Domicilio", icon: "bike" as IconName },
               { label: "En tienda", icon: "store" as IconName },
+              { label: "Domicilio", icon: "bike" as IconName },
             ].map((item) => (
               <button key={item.label} className={mode === item.label ? "active" : ""} onClick={() => setMode(item.label)} role="radio" aria-checked={mode === item.label}>
                 <Icon name={item.icon} size={17} /> {item.label}
@@ -467,6 +476,30 @@ export default function App() {
             <span className="order-code-big">#{lastPickupCode}</span>
             <p>Tu pedido será preparado en breve. Guarda este código: podrás consultar su avance desde la barra superior.</p>
             <button className="primary-button" onClick={finishOrder}>Entendido</button>
+          </section>
+        </div>
+      )}
+
+      {codeModalOpen && (
+        <div className="overlay center" onMouseDown={(event) => event.target === event.currentTarget && setCodeModalOpen(false)}>
+          <section className="order-modal code-modal" role="dialog" aria-modal="true" aria-label="Consultar pedido">
+            <button className="order-modal-close" onClick={() => setCodeModalOpen(false)} aria-label="Cerrar"><Icon name="close" size={18} /></button>
+            <div className="order-modal-head">
+              <span className="pickup-icon"><Icon name="receipt" size={26} /></span>
+              <h2 className="co-title center">Consultar pedido</h2>
+              <p className="co-sub">Ingresa el código de tu pedido en tienda para ver su estado y tiempo de espera.</p>
+            </div>
+            <form className="code-form" onSubmit={(event) => { event.preventDefault(); lookupOrderCode(); }}>
+              <input
+                autoFocus
+                value={codeQuery}
+                onChange={(event) => setCodeQuery(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="Ej. 4821"
+                inputMode="numeric"
+                aria-label="Código del pedido"
+              />
+              <button type="submit" className="co-primary" disabled={!codeQuery}>Consultar pedido</button>
+            </form>
           </section>
         </div>
       )}

@@ -1,0 +1,571 @@
+/* ==========================================================================
+   Módulo 18 · Dispositivos — estilos propios (inventario, diagnóstico y versión)
+   Reutiliza tokens y utilidades de `src/index.css`.
+   ========================================================================== */
+
+.vista-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.texto-tenue {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.texto-fuerte {
+  display: block;
+  color: var(--ink);
+  font-size: 10px;
+}
+
+.fila-acciones {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Resumen del parque -------------------------------------------------------- */
+
+.dispositivos-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.dispositivos-resumen__card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.dispositivos-resumen__card span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.dispositivos-resumen__card strong {
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dispositivos-resumen__card--alerta {
+  border-color: #edd5ab;
+  background: linear-gradient(180deg, var(--amber-soft), var(--panel) 65%);
+}
+
+/* Tabla --------------------------------------------------------------------- */
+
+.dispositivo-celda {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.dispositivo-celda__icono {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--panel-alt);
+  color: var(--muted);
+}
+
+.dispositivo-celda__icono--apk {
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+}
+
+.dispositivo-celda__icono--kds {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.dispositivo-celda__icono--caja {
+  background: var(--leaf-soft);
+  color: var(--leaf);
+}
+
+.dispositivo-celda__icono--print_agent {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.dispositivo-celda strong {
+  display: block;
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.dispositivo-celda small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font: 500 9px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.version-celda {
+  display: block;
+  color: var(--ink);
+  font: 600 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.version-celda__alerta {
+  display: block;
+  margin-top: 3px;
+  color: var(--amber);
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.dispositivos-paginacion {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dispositivos-paginacion__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dispositivos-paginacion__controls .button[disabled] {
+  opacity: 0.45;
+}
+
+/* Ficha del dispositivo ----------------------------------------------------- */
+
+.detalle-dispositivo__subtitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ficha {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.ficha__fila {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  padding: 10px 13px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.ficha__fila:last-child {
+  border-bottom: 0;
+}
+
+.ficha__fila > span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.ficha__fila strong {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ficha__fila small {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.ficha__alerta {
+  color: var(--amber) !important;
+}
+
+.ficha__asignacion {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-alt);
+  margin-bottom: 14px;
+}
+
+.ficha__asignacion header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ficha__asignacion header strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.ficha__asignacion p {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.ficha__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ficha__acciones--estado {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+/* Diagnóstico --------------------------------------------------------------- */
+
+.diagnostico {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.diagnostico__kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.diagnostico__kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+}
+
+.diagnostico__kpi span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.diagnostico__kpi strong {
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.diagnostico__kpi small {
+  color: var(--muted);
+  font-size: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.diagnostico__aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--blue-soft);
+  border-radius: 9px;
+  background: var(--blue-soft);
+  color: #2c5c77;
+  font-size: 11px;
+}
+
+.diagnostico__bloque h4 {
+  margin: 0 0 9px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.diagnostico__bloque {
+  display: flex;
+  flex-direction: column;
+}
+
+.diagnostico__alertas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.diagnostico__alerta {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+}
+
+.diagnostico__alerta strong {
+  display: block;
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.diagnostico__alerta small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.diagnostico__error {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--red);
+  font-size: 9px;
+}
+
+.diagnostico__historial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.diagnostico__historial li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-size: 11px;
+}
+
+.diagnostico__historial li:last-child {
+  border-bottom: 0;
+}
+
+.diagnostico__historial svg {
+  color: var(--brand);
+}
+
+.diagnostico__historial small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+/* Wizard de vinculación ----------------------------------------------------- */
+
+.modal--wizard {
+  width: min(640px, 94vw);
+}
+
+.wizard-tipos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.wizard-tipo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.wizard-tipo:hover {
+  border-color: var(--brand);
+}
+
+.wizard-tipo--activo {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.wizard-tipo svg {
+  color: var(--brand);
+}
+
+.wizard-tipo strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.wizard-tipo small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.wizard-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wizard-resumen {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.wizard-resumen li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-alt);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.wizard-resumen li strong {
+  color: var(--ink);
+}
+
+.wizard-resumen__nota {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-start !important;
+}
+
+.token-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  padding: 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  background: var(--panel-alt);
+  text-align: center;
+  color: var(--muted);
+}
+
+.token-panel svg {
+  color: var(--brand);
+}
+
+.token-panel code {
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font: 700 15px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.06em;
+}
+
+.token-panel p {
+  margin: 0;
+  font-size: 11px;
+  max-width: 42ch;
+}
+
+/* Política de versiones ----------------------------------------------------- */
+
+.versiones .field {
+  min-width: 110px;
+}
+
+.versiones .input {
+  min-height: 32px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.versiones__forzar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+  font-size: 11px;
+}
+
+.versiones__forzar input {
+  accent-color: var(--brand);
+}
+
+.versiones__parque {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.versiones__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 13px 17px;
+  border-top: 1px solid var(--line);
+  background: var(--panel-alt);
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.versiones__footer span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 720px) {
+  .diagnostico__kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-tipos {
+    grid-template-columns: 1fr;
+  }
+
+  .ficha__fila {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

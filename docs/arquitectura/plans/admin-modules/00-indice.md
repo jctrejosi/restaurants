@@ -240,3 +240,24 @@ Usuarios/permisos ← todo lo demás; `analytics` ← Reportes/Tiempos.
 - Estos planes asumen las **preguntas abiertas de R5 §14** con sus supuestos por defecto
   (2FA en V1, retención de auditoría 2 años, cierre diario por correo, etc.); si el cliente las
   cambia, revisar los módulos afectados.
+
+---
+
+## 9. Estado de implementación
+
+**2026-10-06 — Fase 0 y los 19 módulos implementados en `Interface web admin`.**
+
+- El prototipo de Figma Make se modularizó: router real (`react-router-dom`), shell con sidebar por
+  bloques (incluido Configuración), búsqueda global (⌘K), sede activa, campana de alertas, sesión,
+  permisos `modulo.accion`, kit de UI/datos compartido y capa de datos (`@tanstack/react-query`).
+- Cada módulo vive en `Interface web admin/src/modules/<modulo>/` con su `api.ts`, tipos, página y
+  componentes; las rutas y subrutas del §1 están montadas (los marcadores quedan solo como red de
+  seguridad para módulos futuros).
+- **Datos de desarrollo:** los endpoints (`/admin/…`) se simulan con `registerMock` mientras la API
+  NestJS no exista. Con `VITE_USE_MOCKS=false` los hooks apuntan a la API real sin tocar código.
+  Realtime por Socket.IO detrás de `VITE_ENABLE_REALTIME=true`.
+- **Pendiente del siguiente hito** (plan 05 §16): el plan de **backend/API y eventos** que dé
+  servicio a los endpoints propuestos por cada módulo. Los hallazgos de esquema (notas crédito,
+  reembolsos parciales, versión mínima por dispositivo, rutas de impresión, ARCO, recurrencia en
+  `cierre_temporal`, metadato de frescura de `analytics`) están marcados como «Supuesto» en cada
+  documento y conviene resolverlos en ese hito.

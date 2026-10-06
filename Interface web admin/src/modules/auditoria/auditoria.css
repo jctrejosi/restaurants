@@ -1,0 +1,418 @@
+/* ==========================================================================
+   Módulo 16 · Auditoría — estilos propios (explorador, bitácora y diffs)
+   Reutiliza tokens y utilidades de `src/index.css`.
+   ========================================================================== */
+
+.audit-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.audit-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Retención e inmutabilidad ------------------------------------------------- */
+
+.audit-retention {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel-alt);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.audit-retention small {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.audit-immutable {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Explorador ---------------------------------------------------------------- */
+
+.audit-accion {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.audit-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid rgba(168, 93, 8, 0.4);
+  border-radius: 9px;
+  background: var(--amber-soft);
+  color: #7a4a06;
+  font-size: 11px;
+}
+
+.audit-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.audit-pagination__actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+/* Drawer de evento ---------------------------------------------------------- */
+
+.audit-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.audit-detail__questions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+.audit-detail__questions > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.audit-detail__questions span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.audit-detail__questions strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.audit-detail__questions small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.audit-detail__section {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.audit-detail__section h3 {
+  margin: 0 0 9px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.audit-detail__meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 16px;
+  margin: 0;
+}
+
+.audit-detail__meta dt {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.audit-detail__meta dd {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.audit-detail__note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-alt);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.audit-detail__missing {
+  color: var(--muted-light);
+}
+
+/* Diff antes / después ------------------------------------------------------ */
+
+.audit-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.audit-diff__empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.audit-diff__created {
+  align-self: flex-start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--leaf-soft);
+  color: var(--leaf);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.audit-diff table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.audit-diff th {
+  padding: 7px 10px;
+  background: var(--panel-alt);
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+}
+
+.audit-diff td {
+  padding: 7px 10px;
+  border-top: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+
+.audit-diff__antes {
+  color: var(--red);
+  text-decoration: line-through;
+  text-decoration-color: rgba(179, 38, 30, 0.4);
+}
+
+.audit-diff__despues {
+  color: var(--leaf);
+  font-weight: 600;
+}
+
+/* Línea de tiempo por entidad ----------------------------------------------- */
+
+.audit-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.audit-timeline__item {
+  position: relative;
+  padding: 0 0 14px 26px;
+}
+
+.audit-timeline__item::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 20px;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+
+.audit-timeline__item:last-child::before {
+  display: none;
+}
+
+.audit-timeline__dot {
+  position: absolute;
+  left: 2px;
+  top: 13px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muted-light);
+  box-shadow: 0 0 0 3px #ece8e4;
+}
+
+.audit-timeline__item--critica .audit-timeline__dot {
+  background: var(--red);
+  box-shadow: 0 0 0 3px var(--red-soft);
+}
+
+.audit-timeline__item--alta .audit-timeline__dot {
+  background: var(--amber);
+  box-shadow: 0 0 0 3px var(--amber-soft);
+}
+
+.audit-timeline__item--media .audit-timeline__dot {
+  background: var(--gold);
+  box-shadow: 0 0 0 3px #fdf3dd;
+}
+
+.audit-timeline__item--baja .audit-timeline__dot {
+  background: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+.audit-timeline__item--info .audit-timeline__dot {
+  background: var(--leaf);
+  box-shadow: 0 0 0 3px var(--leaf-soft);
+}
+
+.audit-timeline__card {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 130ms ease, border-color 130ms ease;
+}
+
+.audit-timeline__card:hover {
+  border-color: var(--line-strong);
+  box-shadow: 0 6px 18px rgba(45, 37, 31, 0.08);
+}
+
+.audit-timeline__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.audit-timeline__head strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.audit-timeline__hora {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.audit-timeline__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.audit-timeline__fuente {
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel-alt);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+}
+
+.audit-timeline__motivo {
+  margin: 7px 0 0;
+  padding: 6px 9px;
+  border-left: 3px solid var(--line-strong);
+  background: var(--panel-alt);
+  color: var(--text);
+  font-size: 11px;
+}
+
+.audit-timeline__diff {
+  margin: 6px 0 0;
+  color: var(--brand-dark);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.audit-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 34px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.audit-empty svg {
+  color: var(--muted-light);
+}
+
+.audit-empty strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.audit-empty p {
+  max-width: 520px;
+  margin: 0;
+  font-size: 11px;
+}
+
+.audit-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Responsive ---------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .audit-detail__questions,
+  .audit-detail__meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,946 @@
+/* ==========================================================================
+   Módulo Reservas — estilos propios (reutiliza el prototipo: panel, drawer,
+   modal, filter-bar, tabs, status y saved-view viven en index.css).
+   ========================================================================== */
+
+.filter-tabs--inline {
+  min-height: 36px;
+  padding: 0 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.reservas-vistas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 12px;
+}
+
+.reservas-vistas__label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.reservas-paginacion {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reservas-paginacion__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Detalle: cabecera, acciones y pestañas                                      */
+/* -------------------------------------------------------------------------- */
+
+.reserva-entity {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.reserva-entity__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reserva-codigo {
+  font: 650 16px ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink);
+}
+
+.reserva-chip {
+  font-size: 10px;
+  color: var(--text);
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.reserva-entity__tiempos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.reserva-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.reserva-acciones .button {
+  min-height: 32px;
+  font-size: 11px;
+}
+
+.reserva-tab {
+  padding-top: 14px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Resumen                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.reserva-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.detail-block {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #fff;
+}
+
+.detail-block--wide {
+  grid-column: 1 / -1;
+}
+
+.detail-block h4 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.reserva-dato {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.reserva-dato:last-child {
+  border-bottom: 0;
+}
+
+.reserva-dato > span {
+  flex-shrink: 0;
+}
+
+.reserva-dato strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: right;
+}
+
+.reserva-sellos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.reserva-sello {
+  font-size: 9px;
+  color: var(--muted);
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.reserva-nota {
+  margin: 10px 0 0;
+  font-size: 10px;
+  color: var(--muted-light);
+  line-height: 1.5;
+}
+
+.reserva-nota code {
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0 4px;
+}
+
+.reserva-notas {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Depósito (V1)                                                               */
+/* -------------------------------------------------------------------------- */
+
+.reserva-deposito {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reserva-deposito__resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reserva-deposito__resumen > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.reserva-deposito__acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.reserva-deposito__movimientos .table-wrap {
+  margin: 0 -14px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Bitácora (línea de tiempo propia para no depender del módulo Pedidos)       */
+/* -------------------------------------------------------------------------- */
+
+.reserva-bitacora__toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reserva-bitacora__toolbar .reserva-nota {
+  margin: 0;
+  max-width: 62ch;
+}
+
+.reserva-bitacora__lista {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 0;
+}
+
+.reserva-bitacora__item {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  padding: 0 0 18px 2px;
+}
+
+.reserva-bitacora__item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 16px;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+
+.reserva-bitacora__dot {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+  margin-top: 4px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+
+.reserva-bitacora__dot--green {
+  background: #5d8a4f;
+}
+
+.reserva-bitacora__dot--blue {
+  background: #4b86a8;
+}
+
+.reserva-bitacora__dot--gray {
+  background: #a49c95;
+}
+
+.reserva-bitacora__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.reserva-bitacora__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reserva-bitacora__head strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.reserva-bitacora__time {
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.reserva-bitacora__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.reserva-bitacora__meta span:not(:last-child)::after {
+  content: "·";
+  margin-left: 6px;
+  color: var(--line-strong);
+}
+
+.reserva-bitacora__detail {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--text);
+}
+
+.reserva-bitacora__result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+
+.reserva-bitacora__tiempo {
+  font-size: 10px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.reserva-diffs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.reserva-diff {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-alt);
+  font-size: 10px;
+}
+
+.reserva-diff__campo {
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 9px;
+}
+
+.reserva-diff__antes {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.reserva-diff__arrow {
+  color: var(--line-strong);
+}
+
+.reserva-diff__despues {
+  color: #3f6035;
+  background: var(--leaf-soft);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-weight: 650;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Calendario                                                                  */
+/* -------------------------------------------------------------------------- */
+
+.reservas-calendario__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reservas-calendario__fecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 6px;
+  color: var(--ink);
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+.reservas-calendario__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 14px;
+  align-items: start;
+}
+
+.reservas-calendario__panel {
+  overflow: auto;
+}
+
+.reservas-calendario__side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reservas-calendario__cargando,
+.reservas-calendario__estado {
+  padding: 6px;
+}
+
+.cal {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  min-width: 560px;
+}
+
+.cal--semana {
+  min-width: 820px;
+}
+
+.cal__gutter-head {
+  height: 34px;
+}
+
+.cal__gutter {
+  grid-column: 1;
+}
+
+.cal__dias {
+  grid-column: 2;
+  display: flex;
+}
+
+.cal-hora {
+  position: relative;
+  border-top: 1px solid var(--line);
+  font-size: 9px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-hora span {
+  position: absolute;
+  top: -7px;
+  right: 6px;
+  background: var(--panel);
+  padding: 0 2px;
+}
+
+.cal-dia {
+  flex: 1;
+  min-width: 0;
+  border-left: 1px solid var(--line);
+}
+
+.cal-dia:last-child {
+  border-right: 1px solid var(--line);
+}
+
+.cal-dia__head {
+  height: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-alt);
+}
+
+.cal-dia__head strong {
+  font-size: 11px;
+  color: var(--ink);
+  text-transform: capitalize;
+}
+
+.cal-dia__head span {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.cal-dia__head--hoy strong {
+  color: var(--brand);
+}
+
+.cal-dia__pista {
+  position: relative;
+  cursor: crosshair;
+}
+
+.cal-linea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid var(--line);
+  pointer-events: none;
+}
+
+.cal-bloqueo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  padding: 2px 5px;
+  overflow: hidden;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-top: 1px dashed rgba(168, 93, 8, 0.45);
+  border-bottom: 1px dashed rgba(168, 93, 8, 0.45);
+  background: repeating-linear-gradient(45deg, rgba(168, 93, 8, 0.07) 0 6px, rgba(168, 93, 8, 0.15) 6px 12px);
+  color: var(--amber);
+}
+
+.cal-bloqueo--festivo {
+  border-color: rgba(53, 107, 137, 0.45);
+  background: repeating-linear-gradient(45deg, rgba(53, 107, 137, 0.07) 0 6px, rgba(53, 107, 137, 0.15) 6px 12px);
+  color: var(--blue);
+}
+
+.cal-bloqueo--evento {
+  border-color: rgba(74, 107, 63, 0.45);
+  background: repeating-linear-gradient(45deg, rgba(74, 107, 63, 0.07) 0 6px, rgba(74, 107, 63, 0.15) 6px 12px);
+  color: #3f6035;
+}
+
+.cal-ahora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  border-top: 2px solid var(--red);
+  pointer-events: none;
+}
+
+.cal__leyenda {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--panel-alt);
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.cal__leyenda-titulo {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cal__leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cal__leyenda-punto {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+
+.cal__leyenda-punto--solicitada {
+  background: var(--blue-soft);
+  border-color: #b9d4e2;
+}
+
+.cal__leyenda-punto--confirmada {
+  background: var(--leaf-soft);
+  border-color: #c5d8bd;
+}
+
+.cal__leyenda-punto--sentada {
+  background: var(--amber-soft);
+  border-color: #e8cfa4;
+}
+
+.cal__leyenda-punto--finalizada,
+.cal__leyenda-punto--cancelada {
+  background: #f0ede9;
+  border-color: #dcd6cf;
+}
+
+.cal__leyenda-punto--no_show {
+  background: #fff;
+  border-color: var(--line-strong);
+}
+
+.cal__leyenda-punto--bloqueo {
+  background: repeating-linear-gradient(45deg, rgba(168, 93, 8, 0.15) 0 3px, transparent 3px 6px);
+  border-color: rgba(168, 93, 8, 0.45);
+}
+
+.reserva-bloque {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 3px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  text-align: left;
+  font: inherit;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.reserva-bloque:hover {
+  filter: brightness(0.97);
+  box-shadow: var(--shadow-sm);
+}
+
+.reserva-bloque__hora {
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.reserva-bloque__cliente {
+  font-size: 10px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reserva-bloque__meta {
+  font-size: 8px;
+  opacity: 0.82;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reserva-bloque--blue {
+  background: var(--blue-soft);
+  border-color: #b9d4e2;
+  color: #2c5c77;
+}
+
+.reserva-bloque--green {
+  background: var(--leaf-soft);
+  border-color: #c5d8bd;
+  color: #3f6035;
+}
+
+.reserva-bloque--amber {
+  background: var(--amber-soft);
+  border-color: #e8cfa4;
+  color: #8c4a06;
+}
+
+.reserva-bloque--gray {
+  background: #f0ede9;
+  border-color: #dcd6cf;
+  color: #69615b;
+}
+
+.reserva-bloque--outline {
+  background: #fff;
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.reserva-bloque--cancelada {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.reserva-bloque--no_show {
+  border-style: dashed;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Lista de espera y próximas llegadas                                         */
+/* -------------------------------------------------------------------------- */
+
+.reserva-panel__vacio .state-block {
+  border: 0;
+  padding: 18px 10px;
+}
+
+.reserva-espera,
+.reserva-llegadas {
+  list-style: none;
+  margin: 0;
+  padding: 0 14px 12px;
+}
+
+.reserva-espera__item {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.reserva-espera__item:last-child,
+.reserva-llegada:last-child {
+  border-bottom: 0;
+}
+
+.reserva-espera__item--cerrada {
+  opacity: 0.55;
+}
+
+.reserva-espera__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.reserva-espera__head strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink);
+}
+
+.reserva-espera__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.reserva-espera__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reserva-espera__notas {
+  margin: 5px 0 0;
+  font-size: 9px;
+  color: var(--muted-light);
+}
+
+.reserva-espera__item .button {
+  margin-top: 6px;
+}
+
+.reserva-llegada {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.reserva-llegada--retrasada {
+  background: linear-gradient(90deg, var(--red-soft), transparent 70%);
+}
+
+.reserva-llegada__hora {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 66px;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.reserva-llegada__hora strong {
+  font-size: 12px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.reserva-llegada__hora span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.reserva-llegada__cuerpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.reserva-llegada__cuerpo strong {
+  font-size: 11px;
+  color: var(--ink);
+}
+
+.reserva-llegada__cuerpo .status {
+  align-self: flex-start;
+}
+
+.reserva-llegada .button {
+  min-height: 28px;
+  font-size: 10px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Formularios y diálogos propios                                               */
+/* -------------------------------------------------------------------------- */
+
+.reserva-campos-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.reserva-campos-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.reserva-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-alt);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.reserva-aviso svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.reserva-aviso--error {
+  border-color: rgba(179, 38, 30, 0.3);
+  background: var(--red-soft);
+  color: #7c1a15;
+}
+
+.reserva-alternativas {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.reserva-modal--ancho {
+  width: min(680px, 94vw);
+}
+
+.reserva-politica {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Bloqueos y festivos (V1)                                                    */
+/* -------------------------------------------------------------------------- */
+
+.reserva-bloqueos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reserva-impacto__vacio .state-block {
+  border: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive                                                                  */
+/* -------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .reservas-calendario__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .reserva-resumen,
+  .reserva-campos-2,
+  .reserva-campos-3,
+  .reserva-deposito__resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .reserva-entity,
+  .reserva-entity__tiempos {
+    align-items: flex-start;
+  }
+}

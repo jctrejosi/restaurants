@@ -1,0 +1,566 @@
+/* ==========================================================================
+   Módulo Salón — estilos propios (reutiliza panel, drawer, modal, tabs,
+   status y fields de index.css).
+   ========================================================================== */
+
+.salon-nota {
+  margin: 6px 0 0;
+  font-size: 10px;
+  color: var(--muted-light);
+  line-height: 1.5;
+}
+
+.salon-barra {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.salon-barra__sede {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.salon-barra__resumen {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.salon-barra__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
+.salon-barra__hint {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted-light);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Editor: toolbar, lienzo e inspector                                         */
+/* -------------------------------------------------------------------------- */
+
+.salon-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.salon-editor__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.salon-editor__aviso {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.salon-editor__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 14px;
+  align-items: start;
+}
+
+.salon-editor__canvas {
+  overflow: auto;
+  padding: 10px;
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.salon-editor__side {
+  position: sticky;
+  top: 12px;
+}
+
+.salon-editor__side-body {
+  padding: 14px 16px;
+}
+
+.salon-popover-anchor {
+  position: relative;
+}
+
+.salon-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 40;
+  min-width: 178px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+}
+
+.salon-popover button {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.salon-popover button:hover {
+  background: var(--panel-alt);
+}
+
+.salon-leyenda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.salon-leyenda__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.salon-leyenda__punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+
+.salon-leyenda__punto--libre {
+  background: var(--leaf-soft);
+  border-color: #7ba36a;
+}
+
+.salon-leyenda__punto--ocupada {
+  background: var(--amber-soft);
+  border-color: #d9a04a;
+}
+
+.salon-leyenda__punto--por_cobrar {
+  background: #f0ede9;
+  border-color: #b9b1a9;
+}
+
+.salon-leyenda__punto--reservada {
+  background: var(--blue-soft);
+  border-color: #7fa8c2;
+}
+
+.salon-leyenda__punto--fuera_servicio {
+  background: repeating-linear-gradient(45deg, #f0ede9 0 3px, #dcd6cf 3px 6px);
+  border-color: var(--line-strong);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Lienzo                                                                      */
+/* -------------------------------------------------------------------------- */
+
+.salon-canvas {
+  position: relative;
+  background-color: var(--panel);
+  background-image: linear-gradient(to right, rgba(214, 208, 201, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(214, 208, 201, 0.35) 1px, transparent 1px);
+  background-size: 40px 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+}
+
+.salon-canvas--preview {
+  margin: 0 auto;
+}
+
+.salon-zona {
+  position: absolute;
+  z-index: 0;
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  background: rgba(250, 248, 245, 0.65);
+}
+
+.salon-zona__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 8px;
+}
+
+.salon-zona__head strong {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.salon-zona__head span {
+  font-size: 8px;
+  color: var(--muted-light);
+}
+
+.salon-union {
+  position: absolute;
+  z-index: 1;
+  border: 2px dashed rgba(53, 107, 137, 0.55);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.salon-union span {
+  position: absolute;
+  top: -9px;
+  left: 10px;
+  padding: 1px 7px;
+  background: var(--blue-soft);
+  color: #2c5c77;
+  font-size: 8px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.salon-mesa {
+  position: absolute;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid var(--line-strong);
+  border-radius: 9px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.salon-mesa strong {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.salon-mesa small {
+  margin-top: 1px;
+  font-size: 8px;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.salon-mesa--redonda {
+  border-radius: 50%;
+}
+
+.salon-mesa--libre {
+  border-color: #7ba36a;
+  background: var(--leaf-soft);
+  color: #3f6035;
+}
+
+.salon-mesa--ocupada {
+  border-color: #d9a04a;
+  background: var(--amber-soft);
+  color: #8c4a06;
+}
+
+.salon-mesa--por_cobrar {
+  border-color: #b9b1a9;
+  background: #f0ede9;
+  color: #69615b;
+}
+
+.salon-mesa--reservada {
+  border-color: #7fa8c2;
+  background: var(--blue-soft);
+  color: #2c5c77;
+}
+
+.salon-mesa--fuera_servicio {
+  border-color: var(--line-strong);
+  background: repeating-linear-gradient(45deg, #f0ede9 0 5px, #e4dfd9 5px 10px);
+  color: var(--muted);
+}
+
+.salon-mesa__bloqueo {
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(45deg, transparent 46%, var(--red) 46%, var(--red) 54%, transparent 54%);
+  opacity: 0.45;
+}
+
+.salon-mesa--sel {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.salon-mesa--unida {
+  box-shadow: 0 0 0 3px rgba(53, 107, 137, 0.2);
+}
+
+.salon-mesa--inactiva {
+  filter: grayscale(0.8);
+  opacity: 0.5;
+}
+
+.salon-mesa--solo-lectura {
+  cursor: default;
+}
+
+.salon-mesa:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Inspector                                                                   */
+/* -------------------------------------------------------------------------- */
+
+.salon-inspector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.salon-inspector__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.salon-inspector__head strong {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.salon-inspector__estado {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.salon-inspector__estado h4 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.salon-inspector__acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.salon-campos-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.salon-campos-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.salon-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 11px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.salon-check--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.salon-aviso {
+  margin: 4px 0 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(168, 93, 8, 0.35);
+  border-radius: 8px;
+  background: var(--amber-soft);
+  color: #8c4a06;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.salon-modal--ancho {
+  width: min(620px, 94vw);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Zonas y mesas / Uniones / Aforo                                             */
+/* -------------------------------------------------------------------------- */
+
+.salon-elementos,
+.salon-uniones,
+.salon-aforo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.salon-uniones__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 17px 18px;
+}
+
+.salon-uniones__mesas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+.salon-aforo__input {
+  width: 86px;
+  min-height: 32px;
+}
+
+.salon-aforo__horario {
+  display: block;
+  margin-top: 2px;
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--muted-light);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.salon-aforo__zona {
+  display: block;
+  font-size: 11px;
+  color: var(--ink);
+}
+
+.salon-aforo__sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Vista previa del mesero                                                     */
+/* -------------------------------------------------------------------------- */
+
+.salon-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 22px;
+  overflow: auto;
+  background: var(--app-bg);
+}
+
+.salon-preview__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.salon-preview__header strong {
+  display: block;
+  font-family: "Fraunces", serif;
+  font-size: 20px;
+  color: var(--ink);
+}
+
+.salon-preview__header span {
+  display: block;
+  max-width: 78ch;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.salon-preview__resumen {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.salon-preview__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: 10px;
+  color: var(--text);
+}
+
+.salon-preview__body {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  overflow: auto;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive                                                                  */
+/* -------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .salon-editor__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .salon-editor__side {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .salon-campos-2,
+  .salon-campos-3 {
+    grid-template-columns: 1fr;
+  }
+}

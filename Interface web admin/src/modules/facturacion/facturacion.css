@@ -1,0 +1,293 @@
+/* ==========================================================================
+   Módulo 13 · Facturación — estilos propios (facturas, notas y config fiscal)
+   Reutiliza tokens y utilidades de `src/index.css`.
+   ========================================================================== */
+
+.facturacion-meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* «Rechazada» necesita un tono de error que el kit base no tiene. */
+.facturacion-status--rechazada {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.facturacion-resumen {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.facturacion-resumen__chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.facturacion-resumen__chip--alerta {
+  background: var(--amber-soft);
+  border-color: rgba(168, 93, 8, 0.3);
+  color: var(--amber);
+}
+
+.facturacion-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.facturacion-pie__controles {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Detalle ------------------------------------------------------------------ */
+
+.facturacion-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.facturacion-detalle__estado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.facturacion-detalle__bloque h4 {
+  margin: 0 0 9px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.facturacion-detalle__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.facturacion-detalle__lista dt {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.facturacion-detalle__lista dd {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.facturacion-detalle__lista--totales {
+  margin-top: 10px;
+}
+
+.facturacion-detalle__pagos,
+.facturacion-detalle__notas {
+  list-style: none;
+  margin: 9px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.facturacion-detalle__pagos li,
+.facturacion-detalle__notas li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+}
+
+.facturacion-detalle__archivos {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.facturacion-error-proveedor,
+.facturacion-alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 13px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: var(--red-soft);
+  border: 1px solid rgba(179, 38, 30, 0.25);
+  font-size: 12px;
+}
+
+.facturacion-error-proveedor > div,
+.facturacion-alerta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.facturacion-error-proveedor strong,
+.facturacion-alerta strong {
+  color: var(--red);
+}
+
+.facturacion-error-proveedor span,
+.facturacion-alerta span {
+  color: var(--text);
+}
+
+.facturacion-causa {
+  color: var(--red);
+}
+
+/* Timeline ----------------------------------------------------------------- */
+
+.facturacion-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.facturacion-timeline li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.facturacion-timeline__dot {
+  width: 9px;
+  height: 9px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  flex: none;
+}
+
+.facturacion-timeline__dot--aceptada {
+  background: var(--leaf);
+}
+
+.facturacion-timeline__dot--rechazada {
+  background: var(--red);
+}
+
+.facturacion-timeline__dot--reintento {
+  background: var(--blue);
+}
+
+.facturacion-timeline__dot--nota_credito,
+.facturacion-timeline__dot--anulada {
+  background: var(--amber);
+}
+
+.facturacion-timeline__causa {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--text);
+}
+
+/* Configuración fiscal ----------------------------------------------------- */
+
+.facturacion-config__pie {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+}
+
+.facturacion-config__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.facturacion-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12.5px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.facturacion-check input {
+  margin-top: 2px;
+  accent-color: var(--brand);
+}
+
+.facturacion-notas__barra {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+}
+
+.facturacion-notas__barra .button {
+  margin-bottom: 2px;
+}
+
+/* Diagnóstico -------------------------------------------------------------- */
+
+.facturacion-diagnostico__acciones {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.facturacion-diagnostico__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.facturacion-diagnostico__grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.facturacion-diagnostico__grid strong {
+  font-size: 16px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.facturacion-numero--alerta {
+  color: var(--red);
+}
+
+.facturacion-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+}
+
+@media (max-width: 720px) {
+  .facturacion-config__meta {
+    flex-wrap: wrap;
+  }
+}

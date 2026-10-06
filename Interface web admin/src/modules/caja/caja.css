@@ -1,0 +1,477 @@
+/* ==========================================================================
+   Módulo 11 · Caja y turnos — estilos propios (turnos, arqueo y reportes)
+   Reutiliza tokens y utilidades de `src/index.css`.
+   ========================================================================== */
+
+/* Indicadores ------------------------------------------------------------- */
+
+.caja-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.caja-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 15px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.caja-kpi__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.caja-kpi__value {
+  font-size: 20px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.caja-kpi__foot {
+  font-size: 11px;
+  color: var(--muted-light);
+}
+
+.caja-kpi--cuadra {
+  border-color: rgba(74, 107, 63, 0.35);
+}
+
+.caja-kpi--aviso {
+  border-color: rgba(168, 93, 8, 0.35);
+}
+
+.caja-kpi--error {
+  border-color: rgba(179, 38, 30, 0.35);
+  background: var(--red-soft);
+}
+
+.caja-kpi--pendiente {
+  border-style: dashed;
+}
+
+.caja-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.caja-muted {
+  color: var(--muted-light);
+  font-size: 12px;
+}
+
+/* Diferencias y semáforos -------------------------------------------------- */
+
+.caja-diferencia {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.caja-diferencia--cuadra {
+  color: var(--leaf);
+}
+
+.caja-diferencia--aviso {
+  color: var(--amber);
+}
+
+.caja-diferencia--error {
+  color: var(--red);
+}
+
+.caja-semaforo {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.caja-semaforo--cuadra {
+  background: var(--leaf-soft);
+  color: var(--leaf);
+}
+
+.caja-semaforo--aviso {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.caja-semaforo--error {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+/* Tablas auxiliares -------------------------------------------------------- */
+
+.caja-medio__meta,
+.caja-pedido__meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.caja-pedido__pendiente {
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--amber);
+}
+
+.caja-pedido--pendiente td:first-child {
+  border-left: 3px solid var(--amber);
+}
+
+.caja-pendientes__vacio {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.caja-pendientes__modalidad {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Avisos ------------------------------------------------------------------- */
+
+.caja-alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 13px;
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-alt);
+  font-size: 12px;
+}
+
+.caja-alerta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.caja-alerta strong {
+  color: var(--ink);
+}
+
+.caja-alerta span {
+  color: var(--muted);
+}
+
+.caja-alerta--info {
+  background: var(--blue-soft);
+  border-color: rgba(53, 107, 137, 0.25);
+}
+
+.caja-alerta--warning {
+  background: var(--amber-soft);
+  border-color: rgba(168, 93, 8, 0.3);
+}
+
+.caja-nota {
+  margin: 0 0 12px;
+}
+
+.caja-error {
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: var(--red-soft);
+  color: var(--red);
+  font-size: 12px;
+}
+
+/* Arqueo ------------------------------------------------------------------- */
+
+.caja-arqueo__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 16px;
+}
+
+.caja-arqueo__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.caja-arqueo__contado {
+  max-width: 130px;
+  margin-left: auto;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.caja-arqueo__acciones {
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+}
+
+.caja-arqueo__meta {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted-light);
+  text-align: right;
+}
+
+.caja-cuadre {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 16px;
+}
+
+.caja-cuadre__lista {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.caja-cuadre__lista > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.caja-cuadre__lista dt {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.caja-cuadre__lista dd {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.caja-cuadre__lista--compacta dd {
+  font-size: 15px;
+}
+
+.caja-cuadre__diferencia--cuadra dd {
+  color: var(--leaf);
+}
+
+.caja-cuadre__diferencia--aviso dd {
+  color: var(--amber);
+}
+
+.caja-cuadre__diferencia--error dd {
+  color: var(--red);
+}
+
+.caja-cuadre__formula {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted-light);
+  font-style: italic;
+}
+
+/* Lista de turnos ---------------------------------------------------------- */
+
+.caja-paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.caja-paginacion__controles {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Consolidado -------------------------------------------------------------- */
+
+.caja-consolidado__filtros {
+  margin-bottom: 14px;
+}
+
+.caja-consolidado__barra {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.caja-consolidado__barra .caja-muted {
+  margin-bottom: 10px;
+}
+
+.caja-consolidado__barra .button {
+  margin-left: auto;
+  margin-bottom: 2px;
+}
+
+/* Reporte ------------------------------------------------------------------ */
+
+.caja-reporte__cabecera {
+  align-items: flex-start;
+}
+
+.caja-reporte__acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.caja-reporte__error {
+  margin: 0 17px 10px;
+}
+
+.caja-reporte__cuerpo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 16px 17px 20px;
+}
+
+.caja-reporte__bloque h4 {
+  margin: 0 0 9px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.caja-reporte__bloque--ancho {
+  grid-column: 1 / -1;
+}
+
+.caja-reporte__totales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.caja-reporte__totales dt {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.caja-reporte__totales dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.caja-reporte__diferencia--cuadra dd {
+  color: var(--leaf);
+}
+
+.caja-reporte__diferencia--aviso dd {
+  color: var(--amber);
+}
+
+.caja-reporte__diferencia--error dd {
+  color: var(--red);
+}
+
+.caja-reporte__observaciones {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.caja-reporte__rastro {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.caja-reporte__eventos {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.caja-reporte__eventos li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Casillas ----------------------------------------------------------------- */
+
+.caja-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12.5px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.caja-check input {
+  margin-top: 2px;
+  accent-color: var(--brand);
+}
+
+.modal--wide {
+  max-width: 620px;
+  width: min(620px, calc(100vw - 32px));
+}
+
+@media (max-width: 720px) {
+  .caja-arqueo__fila {
+    grid-template-columns: 1fr;
+  }
+
+  .caja-consolidado__barra {
+    flex-wrap: wrap;
+  }
+}
+
+/* Impresión del reporte de cierre ------------------------------------------ */
+
+@media print {
+  .sidebar,
+  .topbar,
+  .caja-reporte__acciones,
+  .tabs,
+  .caja-alerta {
+    display: none !important;
+  }
+
+  .app-main,
+  .content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .caja-reporte,
+  .caja-reporte .panel__header {
+    border: 0;
+    box-shadow: none;
+  }
+}

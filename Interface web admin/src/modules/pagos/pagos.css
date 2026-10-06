@@ -1,0 +1,206 @@
+/* ==========================================================================
+   Módulo 12 · Pagos y propinas — estilos propios (detalle, totales, propinas)
+   Reutiliza tokens y utilidades de `src/index.css`.
+   ========================================================================== */
+
+.pagos-meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Detalle del pago --------------------------------------------------------- */
+
+.pagos-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pagos-detalle__estado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagos-detalle__meta {
+  font-size: 11px;
+  color: var(--muted-light);
+  margin: 4px 0 0;
+}
+
+.pagos-detalle__bloque h4 {
+  margin: 0 0 9px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.pagos-detalle__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.pagos-detalle__lista dt {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.pagos-detalle__lista dd {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pagos-detalle__ajustes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pagos-detalle__ajustes li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+}
+
+.pagos-detalle__ajuste-tipo {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pagos-detalle__conciliacion {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text);
+}
+
+.pagos-detalle__auditoria {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pagos-detalle__auditoria li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Totales del filtro ------------------------------------------------------- */
+
+.pagos-totales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+  padding: 13px 15px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.pagos-totales article {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pagos-totales article span {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pagos-totales article strong {
+  font-size: 17px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pagos-totales--kpis {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.pagos-totales__medios {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.pagos-totales__chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Propinas ----------------------------------------------------------------- */
+
+.pagos-propinas__barra {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+}
+
+.pagos-propinas__barra .pagos-meta {
+  margin-bottom: 10px;
+  max-width: 380px;
+}
+
+.pagos-propinas__acciones {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.pagos-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* Pie de tabla ------------------------------------------------------------- */
+
+.pagos-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pagos-pie__controles {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .pagos-propinas__acciones {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,489 @@
+/* ==========================================================================
+   Módulo 15 · Tiempos y SLA — estilos propios (explorador, sellos y SLA)
+   Reutiliza tokens y utilidades de `src/index.css`.
+   ========================================================================== */
+
+.tiempos-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+/* Sello de frescura (RNF-R5-02) ------------------------------------------- */
+
+.freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.freshness--ok {
+  color: var(--leaf);
+  background: var(--leaf-soft);
+  border-color: rgba(74, 107, 63, 0.35);
+}
+
+.freshness--late {
+  color: var(--red);
+  background: var(--red-soft);
+  border-color: rgba(179, 38, 30, 0.35);
+}
+
+.freshness--muted {
+  color: var(--muted);
+  background: var(--panel-alt);
+}
+
+/* Conmutadores de dimensión/tipo ------------------------------------------ */
+
+.tiempos-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.tiempos-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tiempos-toggle__btn:hover {
+  color: var(--ink);
+  background: var(--panel-alt);
+}
+
+.tiempos-toggle__btn--active {
+  color: var(--brand-dark);
+  background: var(--brand-soft);
+  border-color: #e5cabd;
+}
+
+/* Resumen del tramo -------------------------------------------------------- */
+
+.tiempos-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(220px, 1.4fr);
+  gap: 12px;
+}
+
+.tiempos-resumen__card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.tiempos-resumen__card span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tiempos-resumen__card strong {
+  color: var(--ink);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tiempos-resumen__card small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.tiempos-resumen__card code {
+  color: var(--brand-dark);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Semáforo por fila --------------------------------------------------------- */
+
+.tramo-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.tramo-cell__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--muted-light);
+  flex: 0 0 auto;
+}
+
+.tramo-cell--normal .tramo-cell__dot {
+  background: var(--leaf);
+  box-shadow: 0 0 0 3px var(--leaf-soft);
+}
+
+.tramo-cell--por_vencer .tramo-cell__dot {
+  background: var(--amber);
+  box-shadow: 0 0 0 3px var(--amber-soft);
+}
+
+.tramo-cell--vencida .tramo-cell__dot {
+  background: var(--red);
+  box-shadow: 0 0 0 3px var(--red-soft);
+}
+
+.tramo-sellos {
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tramo-sin-cierre {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--amber);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tiempos-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.tiempos-legend__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: -6px;
+}
+
+.tiempos-legend__dot--normal {
+  background: var(--leaf);
+}
+
+.tiempos-legend__dot--por_vencer {
+  background: var(--amber);
+}
+
+.tiempos-legend__dot--vencida {
+  background: var(--red);
+}
+
+.tiempos-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Sellos del tramo (drawer) ------------------------------------------------ */
+
+.sellos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sellos__formula {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-alt);
+}
+
+.sellos__formula code {
+  color: var(--brand-dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sellos__formula span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.sellos__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sello-card {
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--leaf);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.sello-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sello-card__head strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.sello-card__hora {
+  color: var(--ink);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sello-card__data {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+  margin: 10px 0 0;
+}
+
+.sello-card__data dt {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sello-card__data dd {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.sello-card__data dd small {
+  color: var(--muted);
+}
+
+.sellos__item--missing .sellos__missing {
+  padding: 12px 13px;
+  border: 1px dashed rgba(168, 93, 8, 0.5);
+  border-radius: 10px;
+  background: var(--amber-soft);
+}
+
+.sellos__missing strong {
+  display: block;
+  color: #7a4a06;
+  font-size: 12px;
+}
+
+.sellos__missing span {
+  display: block;
+  margin-top: 4px;
+  color: #7a4a06;
+  font-size: 11px;
+}
+
+.sellos__missing code {
+  font-weight: 700;
+}
+
+.sellos__note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* SLA por estación ---------------------------------------------------------- */
+
+.tiempos-sla-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.tiempos-sla-card {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.tiempos-sla-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tiempos-sla-card__head strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.tiempos-sla-card__pct {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tiempos-sla-card--good .tiempos-sla-card__pct {
+  color: var(--leaf);
+}
+
+.tiempos-sla-card--warn .tiempos-sla-card__pct {
+  color: var(--amber);
+}
+
+.tiempos-sla-card--bad .tiempos-sla-card__pct {
+  color: var(--red);
+}
+
+.tiempos-sla-card__gauge {
+  height: 7px;
+  margin: 9px 0 12px;
+  border-radius: 999px;
+  background: #ece8e4;
+  overflow: hidden;
+}
+
+.tiempos-sla-card__gauge span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--leaf);
+}
+
+.tiempos-sla-card--warn .tiempos-sla-card__gauge span {
+  background: var(--amber);
+}
+
+.tiempos-sla-card--bad .tiempos-sla-card__gauge span {
+  background: var(--red);
+}
+
+.tiempos-sla-card__sin-objetivo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 9px 0 12px;
+}
+
+.tiempos-sla-card__sin-objetivo p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.tiempos-sla-card__data {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px 12px;
+  margin: 0;
+}
+
+.tiempos-sla-card__data dt {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tiempos-sla-card__data dd {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tiempos-sla-historial {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 10px 17px 18px;
+}
+
+.tiempos-sla-historial__col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tiempos-sla-historial__track {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.tiempos-sla-historial__bar {
+  width: 100%;
+  border-radius: 6px 6px 2px 2px;
+  background: var(--leaf);
+  opacity: 0.85;
+}
+
+.tiempos-sla-historial__col span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+/* Responsive ---------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .tiempos-resumen {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .tiempos-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tiempos-resumen {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sello-card__data {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

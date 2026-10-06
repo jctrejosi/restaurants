@@ -14,6 +14,7 @@ export type IconName =
   | "minus"
   | "pin"
   | "plus"
+  | "receipt"
   | "search"
   | "store"
   | "transfer"
@@ -34,6 +35,7 @@ export default function Icon({ name, size = 20 }: { name: IconName; size?: numbe
     minus: <path d="M5 12h14" />,
     pin: <><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></>,
     plus: <><path d="M12 5v14" /><path d="M5 12h14" /></>,
+    receipt: <><path d="M6 3h12v18l-3-1.8-3 1.8-3-1.8L6 21V3Z" /><path d="M9 8h6M9 12h6" /></>,
     search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>,
     store: <><path d="M4 10v10h16V10" /><path d="M3 10 5 4h14l2 6" /><path d="M8 20v-6h8v6" /></>,
     transfer: <><path d="M4 8h13l-3-3" /><path d="M20 16H7l3 3" /></>,
