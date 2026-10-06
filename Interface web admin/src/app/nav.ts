@@ -9,6 +9,7 @@ import {
   BookOpen,
   CalendarDays,
   CircleDollarSign,
+  ClipboardPenLine,
   Clock3,
   CookingPot,
   FileBarChart,
@@ -66,6 +67,18 @@ export const MODULES: ModuleDef[] = [
     status: "listo",
     descripcion: "Lista en vivo e historial, con detalle, líneas, comandas, pagos y bitácora.",
     rutas: ["/pedidos", "/pedidos/:id"],
+  },
+  {
+    id: "tomar-pedido",
+    nombre: "Tomar pedido",
+    bloque: "Operación",
+    path: "/tomar-pedido",
+    icon: ClipboardPenLine,
+    permiso: "tomar-pedido.ver",
+    status: "listo",
+    descripcion:
+      "Alta manual del pedido desde caja o mostrador: carta con modificadores, totales y envío a cocina.",
+    rutas: ["/tomar-pedido"],
   },
   {
     id: "reservas",

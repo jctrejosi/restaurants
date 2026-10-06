@@ -26,6 +26,7 @@ respecto del plan: «Estaciones» → Estaciones e impresoras; «Caja y turnos»
 |---|---|---|---|---|---|---|
 | 01 | En vivo | Operación | `/en-vivo` | MVP | 01–05 | [01-en-vivo.md](./01-en-vivo.md) |
 | 02 | Pedidos | Operación | `/pedidos`, `/pedidos/:id` | MVP | 50–56, 131–132 | [02-pedidos.md](./02-pedidos.md) |
+| 02b | Tomar pedido | Operación | `/tomar-pedido` | MVP | extensión (R5 §4.6) | [20-tomar-pedido.md](./20-tomar-pedido.md) |
 | 03 | Reservas (+ bloqueos y festivos) | Operación | `/reservas`, `/reservas/calendario`, `/reservas/:id` | MVP | 40–47 | [03-reservas.md](./03-reservas.md) |
 | 04 | Comandas | Operación | `/comandas`, `/comandas/:id` | MVP | 60–63 | [04-comandas.md](./04-comandas.md) |
 | 05 | Salón | Operación | `/salon` | MVP | 20–23 | [05-salon.md](./05-salon.md) |
@@ -48,6 +49,10 @@ Fuera de esta serie: **Acceso** (`/entrar`: login, 2FA, `SessionGuard`) y el **s
 global, sede activa, campana de alertas) ya quedaron especificados en el plan 05 §6.1–6.2 y
 §14.1–14.2; se implementan como **Fase 0** (§5 de este documento). **Ayuda y soporte** es pantalla
 auxiliar (atajos, contacto): se resuelve con enlaces y no tiene RF propio.
+
+**Tomar pedido (02b)** es una extensión posterior a la serie original: la captura manual del pedido
+como si se tomara en caja (ver [20-tomar-pedido.md](./20-tomar-pedido.md)). Su RF no existe en R5 y
+queda marcado como supuesto a formalizar.
 
 ---
 
@@ -245,7 +250,8 @@ Usuarios/permisos ← todo lo demás; `analytics` ← Reportes/Tiempos.
 
 ## 9. Estado de implementación
 
-**2026-10-06 — Fase 0 y los 19 módulos implementados en `Interface web admin`.**
+**2026-10-06 — Fase 0 y los 19 módulos de la serie más «Tomar pedido» (02b) implementados en
+`Interface web admin`.**
 
 - El prototipo de Figma Make se modularizó: router real (`react-router-dom`), shell con sidebar por
   bloques (incluido Configuración), búsqueda global (⌘K), sede activa, campana de alertas, sesión,

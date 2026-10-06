@@ -14,6 +14,7 @@ import { SkeletonRows } from "@/components/ui/Skeleton"
 const PAGINAS: Record<string, LazyExoticComponent<ComponentType>> = {
   "en-vivo": lazy(() => import("@/modules/en-vivo/EnVivoPage")),
   pedidos: lazy(() => import("@/modules/pedidos/PedidosPage")),
+  "tomar-pedido": lazy(() => import("@/modules/tomar-pedido/TomarPedidoPage")),
   reservas: lazy(() => import("@/modules/reservas/ReservasPage")),
   comandas: lazy(() => import("@/modules/comandas/ComandasPage")),
   salon: lazy(() => import("@/modules/salon/SalonPage")),

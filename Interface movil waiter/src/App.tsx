@@ -974,7 +974,7 @@ function ComandaCard({
       <AppButton
         className="comanda-main"
         onClick={() => onOpen(comanda)}
-        ariaLabel={`Comanda ${comanda.numero}, mesa ${comanda.mesa}, ${comandaEstadoLabels[comanda.estado]}`}
+        ariaLabel={`Pedido ${comanda.numero}, mesa ${comanda.mesa}, ${comandaEstadoLabels[comanda.estado]}`}
       >
         <div className="comanda-head">
           <span className="comanda-num">#{comanda.numero}</span>
@@ -1079,14 +1079,14 @@ function ComandasView({
     updateComanda(comanda.id, { estado: "entregada", entregada: NOW })
     setSelected(null)
     setNotice(
-      `Comanda #${comanda.numero} de la mesa ${comanda.mesa}: entregada.`,
+      `Pedido #${comanda.numero} de la mesa ${comanda.mesa}: entregado.`,
     )
   }
 
   function confirmarReenvio() {
     if (!resending) return
     setNotice(
-      `Comanda #${resending.numero} reenviada a la pantalla de ${resending.estacion}. Queda registrada en la auditoría.`,
+      `Pedido #${resending.numero} reenviado a la pantalla de ${resending.estacion}. Queda registrado en la auditoría.`,
     )
     setResending(null)
     setSelected(null)
@@ -1096,7 +1096,7 @@ function ComandasView({
     if (!annulling || !annulMotivo) return
     updateComanda(annulling.id, { estado: "anulada" })
     setNotice(
-      `Comanda #${annulling.numero} anulada · ${annulMotivo}. Total del pedido recalculado.`,
+      `Pedido #${annulling.numero} anulado · ${annulMotivo}. Total del pedido recalculado.`,
     )
     setAnnulling(null)
     setAnnulMotivo(null)
@@ -1141,14 +1141,14 @@ function ComandasView({
       <div className="section-heading">
         <div>
           <p className="section-kicker">PUENTE SALÓN · COCINA</p>
-          <h2>Comandas</h2>
+          <h2>Pedidos</h2>
         </div>
         <span className="live-pill">
           <span className="connection-dot" /> En vivo
         </span>
       </div>
 
-      <div className="summary-strip" aria-label="Resumen de comandas">
+      <div className="summary-strip" aria-label="Resumen de pedidos">
         <div>
           <strong className="warning-number">{enCocina}</strong>
           <span>En cocina</span>
@@ -1165,7 +1165,7 @@ function ComandasView({
         </div>
       </div>
 
-      <nav className="zone-tabs" aria-label="Filtro de comandas">
+      <nav className="zone-tabs" aria-label="Filtro de pedidos">
         {comandaFilters.map((item) => (
           <AppButton
             className={filter === item.id ? "zone-chip selected" : "zone-chip"}
@@ -1188,7 +1188,7 @@ function ComandasView({
       {grouped.length === 0 ? (
         <div className="empty-state">
           <Icon name="receipt" size={30} />
-          <strong>Sin comandas en este filtro</strong>
+          <strong>Sin pedidos en este filtro</strong>
           <span>Cuando envíes una ronda a cocina aparecerá aquí.</span>
         </div>
       ) : (
@@ -1283,7 +1283,7 @@ function ComandasView({
                       className="comanda-action danger"
                       onClick={() => setAnnulling(selected)}
                     >
-                      <Icon name="ban" size={15} /> Anular comanda
+                      <Icon name="ban" size={15} /> Anular pedido
                     </AppButton>
                   )}
                 </div>
@@ -1306,7 +1306,7 @@ function ComandasView({
               </div>
               <div>
                 <p className="eyebrow">
-                  REENVIAR A COCINA · COMANDA #{resending.numero}
+                  REENVIAR A COCINA · PEDIDO #{resending.numero}
                 </p>
                 <h2>{resending.estacion}</h2>
                 <p>
@@ -1320,7 +1320,7 @@ function ComandasView({
                 <span>
                   <strong>El reenvío queda auditado</strong>
                   {resending.entregada
-                    ? "Comanda ya entregada: requiere autorización del capitán."
+                    ? "Pedido ya entregado: requiere autorización del capitán."
                     : "Se reenviará a la pantalla de cocina (KDS). No se imprime."}
                 </span>
               </div>
@@ -1351,7 +1351,7 @@ function ComandasView({
                 <Icon name="ban" size={24} />
               </div>
               <div>
-                <p className="eyebrow">ANULAR · COMANDA #{annulling.numero}</p>
+                <p className="eyebrow">ANULAR · PEDIDO #{annulling.numero}</p>
                 <h2>Mesa {annulling.mesa}</h2>
                 <p>El motivo es obligatorio</p>
               </div>
@@ -1363,7 +1363,7 @@ function ComandasView({
                   <div>
                     <strong>Requiere autorización del capitán</strong>
                     <span>
-                      Esta comanda ya se preparó: el intento queda registrado.
+                      Este pedido ya se preparó: el intento queda registrado.
                     </span>
                   </div>
                 </div>
@@ -1516,7 +1516,7 @@ type AvisoFilterOption = {
 const avisoFilters: AvisoFilterOption[] = [
   { id: "pendientes", label: "Sin atender" },
   { id: "todas", label: "Todas" },
-  { id: "comandas", label: "Comandas" },
+  { id: "comandas", label: "Pedidos" },
   { id: "mesas", label: "Mesas" },
   { id: "sistema", label: "Sistema" },
 ]
@@ -2489,7 +2489,7 @@ function HistorialView() {
                 ))}
               </ul>
 
-              <h3 className="ficha-title">Comandas</h3>
+              <h3 className="ficha-title">Pedidos</h3>
               <ul className="ficha-comandas">
                 {selected.comandas.map((comanda) => (
                   <li key={comanda.numero}>
@@ -3235,7 +3235,7 @@ export default function App() {
             onClick={() => setActiveTab("comandas")}
           >
             <Icon name="receipt" />
-            <span>Comandas</span>
+            <span>Pedidos</span>
           </AppButton>
           <AppButton
             className={`nav-item nav-alert ${

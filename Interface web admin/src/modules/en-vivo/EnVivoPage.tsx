@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 import { Pause, Play, Plus } from "lucide-react"
 import { PageHeader } from "@/components/data/PageHeader"
 import { Button } from "@/components/ui/Button"
 import { ErrorState } from "@/components/ui/states"
 import { SkeletonCards, SkeletonRows } from "@/components/ui/Skeleton"
-import { useToast } from "@/components/ui/toast"
 import { useSocketEvent } from "@/lib/realtime"
 import { useEnVivoResumen } from "@/modules/en-vivo/api"
 import { KpisRow } from "@/modules/en-vivo/components/KpisRow"
@@ -28,7 +28,7 @@ export default function EnVivoPage() {
   const [pausado, setPausado] = useState(false)
   const { data, isLoading, isError, refetch } = useEnVivoResumen(pausado)
   const queryClient = useQueryClient()
-  const { mostrar } = useToast()
+  const navigate = useNavigate()
   const ahora = useClock(!pausado)
 
   useSocketEvent(
@@ -64,10 +64,7 @@ export default function EnVivoPage() {
               {pausado ? <Play size={15} /> : <Pause size={15} />}
               {pausado ? "Reanudar" : "Pausar"}
             </Button>
-            <Button
-              variant="primary"
-              onClick={() => mostrar("Nuevo pedido: el alta se implementa con el módulo Pedidos")}
-            >
+            <Button variant="primary" onClick={() => navigate("/tomar-pedido")}>
               <Plus size={17} /> Nuevo pedido
             </Button>
           </>
