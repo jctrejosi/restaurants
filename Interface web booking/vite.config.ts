@@ -5,6 +5,10 @@ import path from 'node:path'
 
 import siteConfiguration from './.figma/make/site.json'
 
+// Site metadata (title, language, favicon) lives in .figma/make/site.json.
+// NOTE: that directory is in `server.watch.ignored`, so the dev server does
+// not hot-restart when it changes — restart `vite` after editing it.
+
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {

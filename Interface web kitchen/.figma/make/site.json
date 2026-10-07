@@ -1,5 +1,7 @@
 {
-  "description": "Displays incoming restaurant table orders on a kitchen TV to streamline order management and improve communication between staff.",
+  "title": "Cocina · Punto C",
+  "language": "es",
+  "description": "Pantalla de cocina (KDS) con los platos en cola y en preparación, su tiempo estimado y quién los prepara.",
   "robots": {
     "index": false
   },

@@ -10,6 +10,7 @@ export function Drawer({
   subtitle,
   children,
   footer,
+  acciones,
   ariaLabel,
   width = 560,
 }: {
@@ -19,6 +20,8 @@ export function Drawer({
   subtitle?: ReactNode
   children: ReactNode
   footer?: ReactNode
+  /** Acciones del encabezado, antes del botón de cierre. */
+  acciones?: ReactNode
   ariaLabel?: string
   width?: number
 }) {
@@ -53,9 +56,12 @@ export function Drawer({
             <div className="drawer__title">{title}</div>
             {subtitle ? <div className="drawer__subtitle">{subtitle}</div> : null}
           </div>
-          <IconButton label="Cerrar" onClick={onClose}>
-            <X size={19} />
-          </IconButton>
+          <div className="drawer__header-acciones">
+            {acciones}
+            <IconButton label="Cerrar" onClick={onClose}>
+              <X size={19} />
+            </IconButton>
+          </div>
         </div>
         <div className="drawer__body">{children}</div>
         {footer ? <div className="drawer__footer">{footer}</div> : null}

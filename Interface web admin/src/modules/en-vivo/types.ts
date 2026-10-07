@@ -17,22 +17,6 @@ export type PedidoActivo = {
   slaSeg?: number
 }
 
-export type MesaEstado = "libre" | "ocupada" | "por_cobrar" | "reservada"
-
-export type MesaResumen = {
-  numero: string
-  estado: MesaEstado
-  etiqueta?: string
-}
-
-export type SalonResumen = {
-  zona: string
-  mesas: MesaResumen[]
-  ocupadas: number
-  libres: number
-  porCobrar: number
-}
-
 export type ComandaResumen = {
   numero: string
   estacion: string
@@ -52,7 +36,6 @@ export type EnVivoResumen = {
   actualizadoEn: string
   kpis: KpiData[]
   pedidosActivos: PedidoActivo[]
-  salon: SalonResumen
   comandas: ComandaResumen[]
   proximasLlegadas: ProximaLlegada[]
 }

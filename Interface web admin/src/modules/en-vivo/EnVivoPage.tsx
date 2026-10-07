@@ -10,7 +10,7 @@ import { useSocketEvent } from "@/lib/realtime"
 import { useEnVivoResumen } from "@/modules/en-vivo/api"
 import { KpisRow } from "@/modules/en-vivo/components/KpisRow"
 import { OrdersPanel } from "@/modules/en-vivo/components/OrdersPanel"
-import { DiningRoomPanel } from "@/modules/en-vivo/components/DiningRoomPanel"
+import { SalonMapPanel } from "@/modules/en-vivo/components/SalonMapPanel"
 import { AlertsPanel } from "@/modules/en-vivo/components/AlertsPanel"
 import { ReservationsPanel } from "@/modules/en-vivo/components/ReservationsPanel"
 
@@ -81,19 +81,17 @@ export default function EnVivoPage() {
             <KpisRow kpis={data.kpis} />
           )}
 
+          <SalonMapPanel />
+
           {isLoading || !data ? (
             <div className="dashboard-grid">
               <section className="panel orders-panel">
                 <SkeletonRows rows={4} columns={5} />
               </section>
-              <section className="panel dining-panel">
-                <SkeletonRows rows={3} columns={4} />
-              </section>
             </div>
           ) : (
             <div className="dashboard-grid">
               <OrdersPanel pedidos={data.pedidosActivos} />
-              <DiningRoomPanel salon={data.salon} />
               <AlertsPanel />
               <ReservationsPanel llegadas={data.proximasLlegadas} />
             </div>

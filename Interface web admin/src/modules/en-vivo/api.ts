@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { api, registerMock } from "@/lib/api"
 import { formatClock, formatMoney } from "@/lib/format"
-import type { EnVivoResumen, MesaEstado, PedidoActivo, SalonResumen } from "@/modules/en-vivo/types"
+import type { EnVivoResumen, PedidoActivo } from "@/modules/en-vivo/types"
 
 /* -------------------------------------------------------------------------- */
 /* Mock de desarrollo (se retira cuando exista `GET /admin/en-vivo/resumen`).  */
@@ -77,31 +77,6 @@ const PEDIDOS: PedidoActivo[] = [
   },
 ]
 
-const MESAS: { numero: string; estado: MesaEstado; etiqueta?: string }[] = [
-  { numero: "01", estado: "libre" },
-  { numero: "02", estado: "ocupada" },
-  { numero: "03", estado: "ocupada" },
-  { numero: "04", estado: "por_cobrar", etiqueta: "Cobrar" },
-  { numero: "05", estado: "ocupada" },
-  { numero: "06", estado: "libre" },
-  { numero: "07", estado: "reservada", etiqueta: "14:00" },
-  { numero: "08", estado: "reservada", etiqueta: "14:15" },
-  { numero: "09", estado: "libre" },
-  { numero: "10", estado: "ocupada" },
-  { numero: "11", estado: "libre" },
-  { numero: "12", estado: "por_cobrar", etiqueta: "Cobrar" },
-]
-
-function construirSalon(): SalonResumen {
-  return {
-    zona: "Terraza principal",
-    mesas: MESAS,
-    ocupadas: MESAS.filter((mesa) => mesa.estado === "ocupada").length,
-    libres: MESAS.filter((mesa) => mesa.estado === "libre").length,
-    porCobrar: MESAS.filter((mesa) => mesa.estado === "por_cobrar").length,
-  }
-}
-
 registerMock("GET", /^\/admin\/en-vivo\/resumen$/, () => {
   const activos = PEDIDOS.length
   const ventasCentavos = 2_845_000
@@ -153,7 +128,6 @@ registerMock("GET", /^\/admin\/en-vivo\/resumen$/, () => {
     actualizadoEn: new Date().toISOString(),
     kpis,
     pedidosActivos: PEDIDOS,
-    salon: construirSalon(),
     comandas: [
       { numero: "1038", estacion: "Parrilla", estado: "En preparación", transcurridoSeg: 9 * 60 + 35, slaSeg: 7 * 60 },
       { numero: "1039", estacion: "Parrilla", estado: "En preparación", transcurridoSeg: 4 * 60 + 10, slaSeg: 7 * 60 },

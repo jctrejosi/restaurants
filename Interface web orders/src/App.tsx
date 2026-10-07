@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Icon, { type IconName } from "./Icon";
 import Checkout, { type CheckoutItem } from "./Checkout";
 import dsiLogo from "./assets/logo.png";
@@ -67,11 +67,11 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState("Favoritos");
   const [mode, setMode] = useState("En tienda");
   const [branchId, setBranchId] = useState(branches[0].id);
-  const [branchOpen, setBranchOpen] = useState(false);
   const [cart, setCart] = useState<Record<number, number>>({ 1: 2 });
   const [draft, setDraft] = useState<Record<number, number>>({});
   const [selected, setSelected] = useState<(typeof products)[number] | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
+  const [orderSetupOpen, setOrderSetupOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [pickupNotice, setPickupNotice] = useState(false);
   const [lastPickupCode, setLastPickupCode] = useState<string | null>(null);
@@ -86,11 +86,7 @@ export default function App() {
   const [codeQuery, setCodeQuery] = useState("");
   const [codeModalOpen, setCodeModalOpen] = useState(false);
   const [lookup, setLookup] = useState<{ code: string; order: PickupOrder | null } | null>(null);
-  const [query, setQuery] = useState("");
-  const [searchFocus, setSearchFocus] = useState(false);
   const [toast, setToast] = useState<{ key: number; name: string; quantity: number } | null>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const branchRef = useRef<HTMLDivElement>(null);
 
   const branch = branches.find((item) => item.id === branchId) ?? branches[0];
 
@@ -101,23 +97,14 @@ export default function App() {
     .filter((product) => cart[product.id])
     .map((product) => ({ id: product.id, name: product.name, image: product.image, price: product.price, quantity: cart[product.id] }));
   const visibleProducts = useMemo(() => {
-    if (query.trim()) {
-      return products.filter((product) => `${product.name} ${product.description}`.toLowerCase().includes(query.toLowerCase()));
-    }
     if (activeCategory === "Favoritos") return products;
     return products.filter((product) => product.category === activeCategory);
-  }, [activeCategory, query]);
-  const searchResults = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    if (!term) return [];
-    return products.filter((product) => `${product.name} ${product.description} ${product.category}`.toLowerCase().includes(term));
-  }, [query]);
-  const showSearchResults = searchFocus && query.trim().length > 0;
+  }, [activeCategory]);
 
   useEffect(() => {
-    document.body.style.overflow = selected || cartOpen || checkoutOpen || pickupNotice || lookup || codeModalOpen ? "hidden" : "";
+    document.body.style.overflow = selected || cartOpen || orderSetupOpen || checkoutOpen || pickupNotice || lookup || codeModalOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [selected, cartOpen, checkoutOpen, pickupNotice, lookup, codeModalOpen]);
+  }, [selected, cartOpen, orderSetupOpen, checkoutOpen, pickupNotice, lookup, codeModalOpen]);
 
   useEffect(() => {
     try {
@@ -126,26 +113,6 @@ export default function App() {
       /* almacenamiento no disponible */
     }
   }, [pickupOrders]);
-
-  useEffect(() => {
-    const handlePointerDown = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (searchRef.current && !searchRef.current.contains(target)) setSearchFocus(false);
-      if (branchRef.current && !branchRef.current.contains(target)) setBranchOpen(false);
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setSearchFocus(false);
-        setBranchOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -188,9 +155,15 @@ export default function App() {
     </div>
   );
 
-  const startCheckout = () => {
+  const openOrderSetup = () => {
     if (!cartCount) return;
     setCartOpen(false);
+    setOrderSetupOpen(true);
+  };
+
+  const confirmOrderSetup = () => {
+    if (!cartCount) return;
+    setOrderSetupOpen(false);
     if (mode === "En tienda") {
       const code = String(Math.floor(1000 + Math.random() * 9000));
       setPickupOrders((current) => ({
@@ -227,49 +200,19 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <button className="brand" aria-label="Ir al inicio">
-          <img className="brand-partner" src={dsiLogo} alt="DSI S.A." />
-          <span className="brand-divider" aria-hidden="true" />
-          <span className="brand-mark">C</span>
-          <span>
-            <strong>PUNTO C</strong>
-            <small>COCINA DE BARRIO</small>
-          </span>
-        </button>
-        <div className="search-static" ref={searchRef}>
-          <Icon name="search" size={17} />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onFocus={() => setSearchFocus(true)}
-            placeholder="Buscar en la carta"
-            aria-label="Buscar en la carta"
-            aria-expanded={showSearchResults}
-          />
-          {query && (
-            <button className="search-clear" onClick={() => setQuery("")} aria-label="Limpiar búsqueda"><Icon name="close" size={15} /></button>
-          )}
-          {showSearchResults && (
-            <div className="search-dropdown">
-              {searchResults.length ? (
-                searchResults.map((product) => (
-                  <div className="search-result" key={product.id}>
-                    <button className="search-result-main" onClick={() => { setSelected(product); setSearchFocus(false); }}>
-                      <img src={product.image} alt="" />
-                      <span><strong>{product.name}</strong><small>{product.category}</small></span>
-                    </button>
-                    <strong className="search-result-price">${product.price}</strong>
-                    {addControl(product, true)}
-                  </div>
-                ))
-              ) : (
-                <div className="search-empty">
-                  <strong>Sin resultados para "{query}"</strong>
-                  <small>Prueba con otro nombre o explora la carta.</small>
-                </div>
-              )}
-            </div>
-          )}
+        <div className="brand-group">
+          <button className="brand" aria-label="Ir al inicio">
+            <span className="brand-mark">C</span>
+            <span>
+              <strong>PUNTO C</strong>
+              <small>COCINA DE BARRIO</small>
+            </span>
+          </button>
+          <button className="menu-link" onClick={() => document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })}>
+            <Icon name="receipt" size={15} />
+            <span>Ver carta</span>
+            <Icon name="arrow-down" size={15} />
+          </button>
         </div>
         <div className="top-actions">
           <form className="order-code" onSubmit={(event) => { event.preventDefault(); lookupOrderCode(); }}>
@@ -298,41 +241,6 @@ export default function App() {
       </header>
 
       <main>
-        <section className="service-panel">
-          <div className="location-wrap" ref={branchRef}>
-            <button className={branchOpen ? "location open" : "location"} onClick={() => setBranchOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={branchOpen}>
-              <span className="location-icon"><Icon name="pin" size={17} /></span>
-              <span><small>Estás pidiendo en</small><strong>{branch.name}</strong></span>
-              <Icon name="chevron" size={17} />
-            </button>
-            {branchOpen && (
-              <div className="location-menu" role="listbox" aria-label="Elige una sucursal">
-                {branches.map((item) => (
-                  <button key={item.id} role="option" aria-selected={item.id === branchId} className={item.id === branchId ? "active" : ""} onClick={() => { setBranchId(item.id); setBranchOpen(false); }}>
-                    <span className="location-icon"><Icon name="pin" size={16} /></span>
-                    <span><strong>{item.name}</strong><small>{item.detail}</small></span>
-                    {item.id === branchId && <Icon name="check" size={17} />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="mode-switch" role="radiogroup" aria-label="Modalidad de pedido">
-            {[
-              { label: "En tienda", icon: "store" as IconName },
-              { label: "Domicilio", icon: "bike" as IconName },
-            ].map((item) => (
-              <button key={item.label} className={mode === item.label ? "active" : ""} onClick={() => setMode(item.label)} role="radio" aria-checked={mode === item.label}>
-                <Icon name={item.icon} size={17} /> {item.label}
-              </button>
-            ))}
-          </div>
-          <div className="service-meta">
-            <span><i className="status-dot" /> {branch.hours}</span>
-            <span><Icon name="clock" size={15} /> {branch.eta}</span>
-          </div>
-        </section>
-
         <section className="hero">
           <div className="hero-copy">
             <span className="eyebrow">HOY SE ANTOJA</span>
@@ -353,7 +261,7 @@ export default function App() {
           </div>
           <nav className="categories" aria-label="Categorías del menú">
             {categories.map((category) => (
-              <button key={category} className={activeCategory === category && !query ? "active" : ""} onClick={() => { setActiveCategory(category); setQuery(""); }}>
+              <button key={category} className={activeCategory === category ? "active" : ""} onClick={() => setActiveCategory(category)}>
                 {category}
               </button>
             ))}
@@ -381,6 +289,16 @@ export default function App() {
           {!visibleProducts.length && <div className="empty"><strong>No encontramos ese platillo</strong><p>Prueba con otro nombre o explora nuestras categorías.</p></div>}
         </section>
       </main>
+
+      <footer className="app-footer">
+        <div className="app-footer-inner">
+          <a href="https://dsi.com.co" target="_blank" rel="noopener noreferrer" className="app-footer-logo">
+            <img src={dsiLogo} alt="DSI SA" />
+          </a>
+          <p className="app-footer-text">© 2026 Desarrollado por <strong>DSI SA</strong> · Todos los derechos reservados</p>
+          <p className="app-footer-place">Manizales, Caldas, Colombia</p>
+        </div>
+      </footer>
 
       {cartCount > 0 && (
         <div className="cart-bar-wrap">
@@ -433,15 +351,8 @@ export default function App() {
         <div className="overlay" onMouseDown={(event) => event.target === event.currentTarget && setCartOpen(false)}>
           <aside className="cart-drawer" role="dialog" aria-modal="true" aria-label="Tu pedido">
             <div className="drawer-head">
-              <div><span className="eyebrow">CASI LISTO</span><h2>Tu pedido</h2></div>
+              <div><h2>Tu pedido</h2></div>
               <button className="sheet-close static" onClick={() => setCartOpen(false)} aria-label="Cerrar"><Icon name="close" /></button>
-            </div>
-            <div className="delivery-note">
-              <Icon name={mode === "En tienda" ? "store" : "bike"} />
-              <span>
-                <strong>{mode === "En tienda" ? "Recoger en tienda" : "Entrega a domicilio"}</strong>
-                <small>{mode === "En tienda" ? `Listo en 20–30 min · ${branch.name}` : `35–50 min · ${branch.name}`}</small>
-              </span>
             </div>
             <div className="cart-lines">
               {products.filter((product) => cart[product.id]).map((product) => (
@@ -459,12 +370,50 @@ export default function App() {
             </div>
             <div className="drawer-summary">
               <div><span>Subtotal</span><span>${subtotal}</span></div>
-              {mode === "Domicilio" && <div><span>Envío</span><span>${deliveryFee}</span></div>}
-              <div className="total"><strong>Total</strong><strong>${mode === "Domicilio" ? subtotal + deliveryFee : subtotal}</strong></div>
-              <button className="primary-button checkout" disabled={!cartCount} onClick={startCheckout}>Continuar pedido <Icon name="arrow" size={18} /></button>
-              <small>{mode === "En tienda" ? "Confirmalo y te avisamos cuando esté listo." : "El total final se confirma en el siguiente paso."}</small>
+              <button className="primary-button checkout" disabled={!cartCount} onClick={openOrderSetup}>Continuar pedido <Icon name="arrow" size={18} /></button>
+              <small>Eliges tienda o domicilio y la sucursal en el siguiente paso.</small>
             </div>
           </aside>
+        </div>
+      )}
+
+      {orderSetupOpen && (
+        <div className="overlay center" onMouseDown={(event) => event.target === event.currentTarget && setOrderSetupOpen(false)}>
+          <section className="order-modal setup-modal" role="dialog" aria-modal="true" aria-label="Cómo quieres tu pedido">
+            <button className="order-modal-close" onClick={() => setOrderSetupOpen(false)} aria-label="Cerrar"><Icon name="close" size={18} /></button>
+            <div className="order-modal-head">
+              <span className="eyebrow">ANTES DE CONTINUAR</span>
+              <h2 className="co-title center">¿Cómo quieres tu pedido?</h2>
+              <p className="co-sub">Elige la modalidad y la sucursal donde prepararemos tu orden.</p>
+            </div>
+            <div className="mode-switch setup" role="radiogroup" aria-label="Modalidad de pedido">
+              {[
+                { label: "En tienda", icon: "store" as IconName },
+                { label: "Domicilio", icon: "bike" as IconName },
+              ].map((item) => (
+                <button key={item.label} className={mode === item.label ? "active" : ""} onClick={() => setMode(item.label)} role="radio" aria-checked={mode === item.label}>
+                  <Icon name={item.icon} size={17} /> {item.label}
+                </button>
+              ))}
+            </div>
+            <div className="setup-branches">
+              <span className="setup-label">Sucursal</span>
+              {branches.map((item) => (
+                <button key={item.id} className={item.id === branchId ? "setup-branch active" : "setup-branch"} onClick={() => setBranchId(item.id)} aria-pressed={item.id === branchId}>
+                  <span className="location-icon"><Icon name="pin" size={16} /></span>
+                  <span><strong>{item.name}</strong><small>{item.detail} · {item.eta}</small></span>
+                  {item.id === branchId && <Icon name="check" size={17} />}
+                </button>
+              ))}
+            </div>
+            <div className="service-meta">
+              <span><i className="status-dot" /> {branch.hours}</span>
+              <span><Icon name="clock" size={15} /> {mode === "En tienda" ? "Listo en 20–30 min" : "Entrega en 35–50 min"}</span>
+            </div>
+            <button className="primary-button" onClick={confirmOrderSetup}>
+              {mode === "En tienda" ? "Confirmar pedido para recoger" : "Continuar a domicilio"} <Icon name="arrow" size={18} />
+            </button>
+          </section>
         </div>
       )}
 

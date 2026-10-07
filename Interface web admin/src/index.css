@@ -143,12 +143,15 @@ button { font: inherit; }
 .sparkline--purple polyline { stroke: var(--purple); } .sparkline--purple .sparkline__area { fill: var(--purple); }
 .sparkline--green polyline { stroke: var(--leaf); } .sparkline--green .sparkline__area { fill: var(--leaf); }
 
-.dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(320px, .9fr); grid-template-areas: "orders dining" "orders alerts" "reservations reservations"; gap: 14px; align-items: start; }
+.dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(320px, .9fr); grid-template-areas: "orders alerts" "reservations reservations"; gap: 14px; align-items: start; }
 .panel { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow-sm); overflow: hidden; }
 .orders-panel { grid-area: orders; }
-.dining-panel { grid-area: dining; }
 .alerts-panel { grid-area: alerts; }
 .reservations-panel { grid-area: reservations; }
+.salon-panel { display: flex; flex-direction: column; }
+.salon-panel__resumen { padding: 0 17px 12px; }
+.salon-panel__body { padding: 0 17px 17px; overflow: auto; }
+.salon-panel__body .salon-canvas { margin: 0 auto; }
 .panel__header { min-height: 62px; padding: 14px 17px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .panel__title { color: var(--ink); font-size: 13px; font-weight: 700; }
 .panel__subtitle { margin-top: 4px; color: var(--muted); font-size: 9px; }
@@ -225,6 +228,7 @@ th:last-child, td:last-child { padding-right: 10px; width: 42px; }
 .drawer { position: fixed; z-index: 70; inset: 0 0 0 auto; width: min(430px, 94vw); background: white; box-shadow: -20px 0 50px rgba(28,25,23,.12); display: flex; flex-direction: column; animation: slide-in 180ms ease-out; }
 @keyframes slide-in { from { transform: translateX(30px); opacity: 0; } }
 .drawer__header { min-height: 78px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.drawer__header-acciones { display: flex; align-items: center; gap: 8px; }
 .drawer__title { font-family: "Fraunces", serif; color: var(--ink); font-size: 20px; font-weight: 650; }
 .drawer__subtitle { margin-top: 4px; color: var(--muted); font-size: 10px; }
 .drawer__body { padding: 10px 20px; flex: 1; overflow-y: auto; }
@@ -257,7 +261,7 @@ th:last-child, td:last-child { padding-right: 10px; width: 42px; }
   .app-main, .sidebar--collapsed + .app-main { margin-left: 0; width: 100%; }
   .menu-trigger { display: inline-grid; }
   .content { padding: 22px 18px 34px; }
-  .dashboard-grid { grid-template-columns: 1fr; grid-template-areas: "orders" "dining" "alerts" "reservations"; }
+  .dashboard-grid { grid-template-columns: 1fr; grid-template-areas: "orders" "alerts" "reservations"; }
   .reservation-list { grid-template-columns: 1fr; }
   .reservation-row { border-right: 0; border-bottom: 1px solid var(--line); }
   .reservation-row:last-child { border-bottom: 0; }

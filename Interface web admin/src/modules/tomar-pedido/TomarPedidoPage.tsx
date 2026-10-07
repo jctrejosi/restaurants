@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useSearchParams } from "react-router-dom"
-import { Plus, RefreshCcw, ShoppingCart } from "lucide-react"
+import { RefreshCcw, ShoppingCart, Users } from "lucide-react"
 import { PageHeader } from "@/components/data/PageHeader"
 import { Button } from "@/components/ui/Button"
+import { Drawer } from "@/components/ui/Drawer"
+import { IconButton } from "@/components/ui/IconButton"
 import { NoPermissionState } from "@/components/ui/states"
 import { useToast } from "@/components/ui/toast"
 import { useAuth } from "@/app/auth"
@@ -32,11 +34,9 @@ import {
 } from "@/modules/tomar-pedido/totales"
 import { CarritoPanel } from "@/modules/tomar-pedido/components/CarritoPanel"
 import { CatalogoPanel } from "@/modules/tomar-pedido/components/CatalogoPanel"
-import { ClientePicker } from "@/modules/tomar-pedido/components/ClientePicker"
 import { ConfirmarEnvioDialog } from "@/modules/tomar-pedido/components/ConfirmarEnvioDialog"
-import { ContextoPanel } from "@/modules/tomar-pedido/components/ContextoPanel"
 import { DescuentoDialog } from "@/modules/tomar-pedido/components/DescuentoDialog"
-import { MesaPicker } from "@/modules/tomar-pedido/components/MesaPicker"
+import { ModalidadSelector } from "@/modules/tomar-pedido/components/ModalidadSelector"
 import { ModificadoresDialog } from "@/modules/tomar-pedido/components/ModificadoresDialog"
 import { NotaLineaDialog } from "@/modules/tomar-pedido/components/NotaLineaDialog"
 import {
@@ -49,7 +49,6 @@ import {
   type ClienteResumen,
   type DescuentoAplicado,
   type LineaCarrito,
-  type MesaCarta,
   type Modalidad,
   type ModificadorElegido,
   type ProductoCarta,
@@ -117,15 +116,13 @@ export default function TomarPedidoPage() {
 
   const [categoriaId, setCategoriaId] = useState("todas")
   const [busqueda, setBusqueda] = useState("")
-  const [carritoMovil, setCarritoMovil] = useState(false)
+  const [carritoAbierto, setCarritoAbierto] = useState(false)
 
   const [productoMods, setProductoMods] = useState<ProductoCarta | null>(null)
   const [lineaMods, setLineaMods] = useState<LineaCarrito | null>(null)
   const [lineaNota, setLineaNota] = useState<LineaCarrito | null>(null)
   const [descuentoAbierto, setDescuentoAbierto] = useState(false)
   const [envioAbierto, setEnvioAbierto] = useState(false)
-  const [clienteAbierto, setClienteAbierto] = useState(false)
-  const [mesaAbierta, setMesaAbierta] = useState(false)
 
   const [borradorId, setBorradorId] = useState<string | null>(null)
   const [guardadoEn, setGuardadoEn] = useState<string | null>(null)
@@ -139,7 +136,6 @@ export default function TomarPedidoPage() {
   /* ------------------------------ Derivados ------------------------------- */
 
   const mesas = contexto.data?.mesas ?? []
-  const meseros = contexto.data?.meseros ?? []
   const turno = contexto.data?.turno ?? null
 
   const mesa = useMemo(
@@ -495,27 +491,10 @@ export default function TomarPedidoPage() {
     }
   }
 
-  function seleccionarMesa(nueva: MesaCarta) {
-    if (nueva.estado !== "libre") {
-      mostrar(
-        `Mesa ${nueva.numero}: ${MESA_ESTADO_LABEL[nueva.estado]}. No se ofrece; elige una libre.`,
-        "error",
-      )
-      return
-    }
-    setMesaNumero(nueva.numero)
-    setMesaAbierta(false)
-  }
-
-  function seleccionarCliente(nuevo: ClienteResumen | null) {
-    setCliente(nuevo)
-    setClientePendienteId(null)
-    if (nuevo?.optOutMarketing) {
-      mostrar(
-        `${nuevo.nombre} tiene opt-out: la venta es válida, no se ofrecen acciones de marketing.`,
-        "info",
-      )
-    }
+  function vaciarCarrito() {
+    setLineas([])
+    setDescuento(null)
+    setLineaActivaId(null)
   }
 
   function limpiarPedido() {
@@ -632,150 +611,144 @@ export default function TomarPedidoPage() {
             >
               <RefreshCcw size={15} /> Actualizar
             </Button>
-            <Button
-              variant="primary"
-              disabled={lineas.length === 0}
-              title={lineas.length === 0 ? "El pedido ya está en blanco" : "Empezar un pedido nuevo"}
-              onClick={() => {
-                if (lineas.length > 0 && borradorId) {
-                  descartar.mutate(borradorId)
-                }
-                limpiarPedido()
-                mostrar("Pedido nuevo en blanco.", "info")
-              }}
-            >
-              <Plus size={16} /> Nuevo
+            <Button variant="primary" onClick={() => setCarritoAbierto(true)}>
+              <ShoppingCart size={16} /> Ver pedido
+              {unidades > 0 ? ` · ${formatMoney(totales.totalCentavos, moneda)}` : ""}
             </Button>
           </>
         }
       />
 
-      <div className="tp-layout">
-        <CatalogoPanel
-          categorias={carta.data?.categorias ?? []}
-          productos={carta.data?.productos ?? []}
-          cargando={carta.isLoading}
-          error={carta.isError}
-          onReintentar={() => void carta.refetch()}
-          categoriaId={categoriaId}
-          busqueda={busqueda}
-          onCategoria={setCategoriaId}
-          onBusqueda={setBusqueda}
-          buscadorRef={buscadorRef}
-          puedeAgregar={puedeCrear}
-          moneda={moneda}
-          onAgregar={agregarProducto}
-          onPersonalizar={(producto) => {
-            setLineaMods(null)
-            setProductoMods(producto)
-          }}
-          onAgotado={(producto) =>
-            mostrar(
-              `«${producto.nombre}» agotado (${producto.agotado.origenDetalle ?? "sin origen"}).${
-                producto.agotado.reactivacionEstimada
-                  ? ` Reactivación estimada: ${new Date(producto.agotado.reactivacionEstimada).toLocaleString("es-MX")}.`
-                  : " Sin reactivación estimada."
-              }${producto.alternativaNombre ? ` Sugerencia: ${producto.alternativaNombre}.` : ""}`,
-              "error",
-            )
-          }
-          onSinPermiso={() => mostrar("Requiere permiso tomar-pedido.crear.", "error")}
-        />
-
-        <div className={`tp-carrito-col ${carritoMovil ? "tp-carrito-col--abierto" : ""}`}>
-          <ContextoPanel
-            modalidad={modalidad}
-            onModalidad={cambiarModalidad}
-            mesa={mesa}
-            avisoMesa={avisoMesa}
-            onAbrirMesa={() => setMesaAbierta(true)}
-            cliente={cliente}
-            onAbrirCliente={() => setClienteAbierto(true)}
-            onQuitarCliente={() => seleccionarCliente(null)}
-            meseros={meseros}
-            meseroId={meseroId}
-            onMesero={setMeseroId}
-            comensales={comensales}
-            onComensales={setComensales}
-            turno={turno}
-            turnoCargando={contexto.isLoading}
-          />
-
-          <CarritoPanel
-            lineas={lineas}
-            moneda={moneda}
-            lineaActivaId={lineaActivaId}
-            puedeCrear={puedeCrear}
-            onActivar={setLineaActivaId}
-            onCantidad={cambiarCantidad}
-            onQuitar={quitarLinea}
-            onModificadores={(linea) => {
-              const producto = carta.data?.productos.find((item) => item.id === linea.productoId)
-              if (!producto) {
-                mostrar("El producto ya no está en la carta vigente.", "error")
-                return
-              }
-              setProductoMods(producto)
-              setLineaMods(linea)
-            }}
-            onNota={setLineaNota}
-            notas={notas}
-            onNotas={setNotas}
-            onVaciar={() => {
-              setLineas([])
-              setDescuento(null)
-              setLineaActivaId(null)
-            }}
-            totales={totales}
-            descuento={descuento}
-            propinaPct={propinaPct}
-            onPropina={setPropinaPct}
-            puedeDescuento={puedeDescuento}
-            puedePrecuenta={puedePrecuenta}
-            puedeCobrar={puedeCobrar}
-            turnoAbierto={Boolean(turno)}
-            guardando={crear.isPending || guardar.isPending}
-            enviando={enviar.isPending}
-            cobrando={cobrar.isPending}
-            guardadoEn={guardadoEn}
-            onGuardar={() => void guardarBorradorManual()}
-            onDescuento={() => {
-              if (!puedeDescuento) {
-                mostrar("Requiere permiso tomar-pedido.descuento.", "error")
-                return
-              }
-              setDescuentoAbierto(true)
-            }}
-            onQuitarDescuento={() => {
-              setDescuento(null)
-              mostrar("Descuento retirado; el cambio queda auditado.", "info")
-            }}
-            onPrecuenta={() => void imprimirPrecuenta()}
-            onEnviar={() => {
-              abrirConfirmacion()
-            }}
-            onCobrar={() => void cobrarPedido()}
-          />
-        </div>
+      <div className="tp-barra">
+        <ModalidadSelector value={modalidad} onChange={cambiarModalidad} />
+        {modalidad === "mesa" ? (
+          <div className="tp-barra__campo">
+            <span className="field__label">
+              <Users size={12} /> Comensales
+            </span>
+            <span className="tp-stepper">
+              <IconButton
+                label="Menos comensales"
+                className="tp-stepper__btn"
+                disabled={comensales <= 1}
+                onClick={() => setComensales(comensales - 1)}
+              >
+                −
+              </IconButton>
+              <span className="tp-stepper__valor">{comensales}</span>
+              <IconButton
+                label="Más comensales"
+                className="tp-stepper__btn"
+                disabled={comensales >= 30}
+                onClick={() => setComensales(comensales + 1)}
+              >
+                +
+              </IconButton>
+            </span>
+          </div>
+        ) : null}
       </div>
 
-      <button
-        type="button"
-        className={`button button--primary tp-movil-toggle ${carritoMovil ? "tp-movil-toggle--oculto" : ""}`}
-        onClick={() => setCarritoMovil(true)}
+      <CatalogoPanel
+        categorias={carta.data?.categorias ?? []}
+        productos={carta.data?.productos ?? []}
+        cargando={carta.isLoading}
+        error={carta.isError}
+        onReintentar={() => void carta.refetch()}
+        categoriaId={categoriaId}
+        busqueda={busqueda}
+        onCategoria={setCategoriaId}
+        onBusqueda={setBusqueda}
+        buscadorRef={buscadorRef}
+        puedeAgregar={puedeCrear}
+        moneda={moneda}
+        onAgregar={agregarProducto}
+        onPersonalizar={(producto) => {
+          setLineaMods(null)
+          setProductoMods(producto)
+        }}
+        onAgotado={(producto) =>
+          mostrar(
+            `«${producto.nombre}» agotado (${producto.agotado.origenDetalle ?? "sin origen"}).${
+              producto.agotado.reactivacionEstimada
+                ? ` Reactivación estimada: ${new Date(producto.agotado.reactivacionEstimada).toLocaleString("es-MX")}.`
+                : " Sin reactivación estimada."
+            }${producto.alternativaNombre ? ` Sugerencia: ${producto.alternativaNombre}.` : ""}`,
+            "error",
+          )
+        }
+        onSinPermiso={() => mostrar("Requiere permiso tomar-pedido.crear.", "error")}
+      />
+
+      <Drawer
+        open={carritoAbierto}
+        onClose={() => setCarritoAbierto(false)}
+        title="Pedido actual"
+        subtitle={
+          lineas.length === 0 ? "Sin líneas todavía" : `${lineas.length} línea(s) · ${unidades} pieza(s)`
+        }
+        acciones={
+          lineas.length > 0 ? (
+            <Button variant="ghost" className="text-action" disabled={!puedeCrear} onClick={vaciarCarrito}>
+              Vaciar
+            </Button>
+          ) : null
+        }
+        width={480}
       >
-        <ShoppingCart size={16} /> {unidades} pza · {formatMoney(totales.totalCentavos, moneda)}
-      </button>
-      {carritoMovil ? (
-        <button
-          type="button"
-          className="button tp-movil-cerrar"
-          onClick={() => setCarritoMovil(false)}
-          aria-label="Cerrar carrito"
-        >
-          Cerrar carrito
-        </button>
-      ) : null}
+        <CarritoPanel
+          variant="drawer"
+          lineas={lineas}
+          moneda={moneda}
+          lineaActivaId={lineaActivaId}
+          puedeCrear={puedeCrear}
+          onActivar={setLineaActivaId}
+          onCantidad={cambiarCantidad}
+          onQuitar={quitarLinea}
+          onModificadores={(linea) => {
+            const producto = carta.data?.productos.find((item) => item.id === linea.productoId)
+            if (!producto) {
+              mostrar("El producto ya no está en la carta vigente.", "error")
+              return
+            }
+            setProductoMods(producto)
+            setLineaMods(linea)
+          }}
+          onNota={setLineaNota}
+          notas={notas}
+          onNotas={setNotas}
+          onVaciar={vaciarCarrito}
+          totales={totales}
+          descuento={descuento}
+          propinaPct={propinaPct}
+          onPropina={setPropinaPct}
+          puedeDescuento={puedeDescuento}
+          puedePrecuenta={puedePrecuenta}
+          puedeCobrar={puedeCobrar}
+          turnoAbierto={Boolean(turno)}
+          guardando={crear.isPending || guardar.isPending}
+          enviando={enviar.isPending}
+          cobrando={cobrar.isPending}
+          guardadoEn={guardadoEn}
+          onGuardar={() => void guardarBorradorManual()}
+          onDescuento={() => {
+            if (!puedeDescuento) {
+              mostrar("Requiere permiso tomar-pedido.descuento.", "error")
+              return
+            }
+            setDescuentoAbierto(true)
+          }}
+          onQuitarDescuento={() => {
+            setDescuento(null)
+            mostrar("Descuento retirado; el cambio queda auditado.", "info")
+          }}
+          onPrecuenta={() => void imprimirPrecuenta()}
+          onEnviar={() => {
+            abrirConfirmacion()
+          }}
+          onCobrar={() => void cobrarPedido()}
+        />
+      </Drawer>
 
       <ModificadoresDialog
         open={Boolean(productoMods)}
@@ -833,21 +806,6 @@ export default function TomarPedidoPage() {
         moneda={moneda}
         onClose={() => setEnvioAbierto(false)}
         onConfirm={() => void confirmarEnvio()}
-      />
-
-      <MesaPicker
-        open={mesaAbierta}
-        onClose={() => setMesaAbierta(false)}
-        mesas={mesas}
-        seleccionada={mesaNumero}
-        onSeleccionar={seleccionarMesa}
-      />
-
-      <ClientePicker
-        open={clienteAbierto}
-        onClose={() => setClienteAbierto(false)}
-        seleccionado={cliente}
-        onSeleccionar={seleccionarCliente}
       />
 
       <p className="tp-atajos">

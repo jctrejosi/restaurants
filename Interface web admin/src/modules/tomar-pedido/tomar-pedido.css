@@ -5,33 +5,37 @@
   position: relative;
 }
 
-/* --------------------------------- Layout -------------------------------- */
+/* --------------------------------- Barra --------------------------------- */
 
-.tp-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 395px;
-  gap: 16px;
-  align-items: start;
+/* Barra sobre la carta: modalidad y, solo para mesa, comensales. */
+.tp-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
 }
 
-.tp-carrito-col {
-  position: sticky;
-  top: 12px;
+.tp-barra__campo {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-height: calc(100vh - 118px);
-  overflow-y: auto;
-  padding-right: 2px;
+  align-items: center;
+  gap: 8px;
+}
+
+.tp-barra__campo > .field__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
 }
 
 /* ------------------------------- Modalidad ------------------------------- */
 
+/* Modalidad como control segmentado sobre la carta (ya no vive en un panel). */
 .tp-modalidad {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
-  padding: 0 14px 12px;
+  width: min(460px, 100%);
 }
 
 .tp-modalidad__btn {
@@ -46,85 +50,6 @@
   border-color: var(--brand);
   background: var(--brand-soft);
   color: var(--brand-dark);
-}
-
-/* ------------------------------- Contexto -------------------------------- */
-
-.tp-contexto__cabecera {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 14px 14px 10px;
-}
-
-.tp-contexto__campos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-  align-items: flex-end;
-  padding: 0 14px 12px;
-}
-
-.tp-contexto__campo {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 150px;
-}
-
-.tp-contexto__campo > .field__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.tp-contexto__no-aplica {
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  color: var(--muted-light);
-  font-size: 12px;
-  font-style: italic;
-}
-
-.tp-contexto__cliente {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.tp-picker-btn {
-  border: 1px solid var(--line-strong);
-  background: white;
-  color: var(--ink);
-  min-height: 36px;
-  justify-content: flex-start;
-  text-align: left;
-  font-weight: 600;
-}
-
-.tp-picker-btn--vacio {
-  border-style: dashed;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.tp-contexto__aviso {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 0 14px 10px;
-  padding: 9px 11px;
-  border-radius: 8px;
-  background: var(--amber-soft);
-  color: #7c4707;
-  font-size: 12px;
-}
-
-.tp-contexto__aviso--suave {
-  background: var(--blue-soft);
-  color: #2c5c77;
 }
 
 /* --------------------------------- Catálogo ------------------------------ */
@@ -164,6 +89,39 @@
 .tp-buscador__control .input {
   padding-left: 30px;
   width: 100%;
+}
+
+.tp-catalogo__acciones {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Conmutador kanban / lista, a la derecha del buscador. */
+.tp-vista {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel-alt);
+}
+
+.tp-vista__btn.button {
+  min-height: 30px;
+  width: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  justify-content: center;
+}
+
+.tp-vista__btn--activa.button {
+  background: white;
+  color: var(--brand-dark);
+  box-shadow: var(--shadow-sm);
 }
 
 .tp-catalogo__tabs {
@@ -342,6 +300,11 @@
 .tp-carrito {
   display: flex;
   flex-direction: column;
+}
+
+/* En el Drawer no hace falta borde de panel ni scroll interno propio. */
+.tp-carrito--drawer .tp-carrito__lineas {
+  max-height: none;
 }
 
 .tp-carrito__cabecera {
@@ -949,59 +912,4 @@
   color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10px;
-}
-
-.tp-movil-toggle,
-.tp-movil-cerrar {
-  display: none;
-}
-
-@media (max-width: 1080px) {
-  .tp-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .tp-carrito-col {
-    position: fixed;
-    inset: auto 0 0 0;
-    z-index: 85;
-    max-height: 84vh;
-    overflow-y: auto;
-    display: none;
-    padding: 12px;
-    border-radius: 18px 18px 0 0;
-    background: var(--app-bg);
-    box-shadow: 0 -20px 44px rgba(28, 25, 23, 0.28);
-  }
-
-  .tp-carrito-col--abierto {
-    display: flex;
-  }
-
-  .tp-movil-toggle {
-    display: inline-flex;
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 84;
-    box-shadow: var(--shadow-md);
-  }
-
-  .tp-movil-toggle--oculto {
-    display: none;
-  }
-
-  .tp-movil-cerrar {
-    display: inline-flex;
-    position: fixed;
-    left: 16px;
-    bottom: 16px;
-    z-index: 86;
-    background: white;
-    border: 1px solid var(--line-strong);
-  }
-
-  .tp-carrito__lineas {
-    max-height: none;
-  }
 }

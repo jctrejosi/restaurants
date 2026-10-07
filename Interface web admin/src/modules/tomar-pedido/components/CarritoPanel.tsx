@@ -43,6 +43,7 @@ export function CarritoPanel({
   onPrecuenta,
   onEnviar,
   onCobrar,
+  variant = "panel",
 }: {
   lineas: LineaCarritoModel[]
   moneda?: string
@@ -74,25 +75,33 @@ export function CarritoPanel({
   onPrecuenta: () => void
   onEnviar: () => void
   onCobrar: () => void
+  /** `drawer`: sin borde de panel ni cabecera propia (la aporta el Drawer). */
+  variant?: "panel" | "drawer"
 }) {
   const unidades = unidadesCarrito(lineas)
+  const enDrawer = variant === "drawer"
   return (
-    <section className="panel tp-carrito" aria-label="Carrito del pedido">
-      <div className="tp-carrito__cabecera">
-        <div>
-          <div className="panel__title">Pedido actual</div>
-          <div className="panel__subtitle">
-            {lineas.length === 0
-              ? "Sin líneas todavía"
-              : `${lineas.length} línea(s) · ${unidades} pieza(s)`}
+    <section
+      className={enDrawer ? "tp-carrito tp-carrito--drawer" : "panel tp-carrito"}
+      aria-label="Carrito del pedido"
+    >
+      {enDrawer ? null : (
+        <div className="tp-carrito__cabecera">
+          <div>
+            <div className="panel__title">Pedido actual</div>
+            <div className="panel__subtitle">
+              {lineas.length === 0
+                ? "Sin líneas todavía"
+                : `${lineas.length} línea(s) · ${unidades} pieza(s)`}
+            </div>
           </div>
+          {lineas.length > 0 ? (
+            <Button variant="ghost" className="text-action" disabled={!puedeCrear} onClick={onVaciar}>
+              Vaciar
+            </Button>
+          ) : null}
         </div>
-        {lineas.length > 0 ? (
-          <Button variant="ghost" className="text-action" disabled={!puedeCrear} onClick={onVaciar}>
-            Vaciar
-          </Button>
-        ) : null}
-      </div>
+      )}
 
       <div className="tp-carrito__lineas">
         {lineas.length === 0 ? (

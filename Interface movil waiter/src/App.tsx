@@ -1,7 +1,9 @@
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type Dispatch,
   type ReactNode,
   type SetStateAction,
@@ -9,12 +11,75 @@ import {
 
 type IconName = "alert" | "arrow-left" | "badge" | "ban" | "bell" | "calendar" | "camera" | "check" | "chevron" | "clock" | "flame" | "grid" | "history" | "lock" | "mail" | "phone" | "printer" | "receipt" | "refresh" | "save" | "search" | "sliders" | "spark" | "user" | "users" | "vibrate" | "wifi" | "x"
 
-type TableStatus = "free" | "occupied" | "payment" | "reserved"
+type TableStatus = "free" | "occupied" | "payment" | "reserved" | "blocked"
+
+/**
+ * Mapa del salón: el MISMO plano que se edita y guarda en el panel admin
+ * (módulo «Salón», sede Centro). Zonas como rectángulos y mesas posicionadas
+ * por celda sobre un grid; lo que se guarda en el admin es lo que se ve aquí.
+ * Se replica la configuración por defecto del admin (api.ts → ZONAS_CFG /
+ * MESAS_CFG) para que el tab Salón coincida con el plano real.
+ */
+type SalonZona = {
+  id: string
+  nombre: string
+  aforo: number
+  x: number
+  y: number
+  ancho: number
+  alto: number
+}
+
+/** Tamaño de celda del grid del mapa (px), igual que en el admin. */
+const CELDA = 40
+
+const salonZonas: SalonZona[] = [
+  {
+    id: "salon",
+    nombre: "Salón principal",
+    aforo: 40,
+    x: 0,
+    y: 0,
+    ancho: 12,
+    alto: 7,
+  },
+  {
+    id: "terraza",
+    nombre: "Terraza",
+    aforo: 32,
+    x: 12,
+    y: 0,
+    ancho: 10,
+    alto: 7,
+  },
+  { id: "barra", nombre: "Barra", aforo: 12, x: 0, y: 7, ancho: 8, alto: 5 },
+  {
+    id: "privado",
+    nombre: "Privado",
+    aforo: 18,
+    x: 8,
+    y: 7,
+    ancho: 14,
+    alto: 5,
+  },
+]
+
+const salonColumnas = Math.max(
+  16,
+  ...salonZonas.map((zona) => zona.x + zona.ancho),
+)
+const salonFilas = Math.max(10, ...salonZonas.map((zona) => zona.y + zona.alto))
 
 type RestaurantTable = {
   id: number
+  /** Número visible en el mapa (dos dígitos, como en el admin). */
+  numero: string
   seats: number
-  zone: "Terraza" | "Salón"
+  zone: string
+  zoneId: string
+  shape: "redonda" | "cuadrada"
+  posX: number
+  posY: number
   status: TableStatus
   detail: string
   badge?: string
@@ -23,41 +88,178 @@ type RestaurantTable = {
 const initialTables: RestaurantTable[] = [
   {
     id: 1,
-    seats: 4,
-    zone: "Terraza",
+    numero: "01",
+    seats: 2,
+    zone: "Salón principal",
+    zoneId: "salon",
+    shape: "redonda",
+    posX: 1.5,
+    posY: 1.5,
     status: "occupied",
-    detail: "32 min",
+    detail: "40 min",
     badge: "Lista",
   },
-  { id: 2, seats: 2, zone: "Terraza", status: "free", detail: "Disponible" },
-  { id: 3, seats: 4, zone: "Terraza", status: "payment", detail: "$ 1,240" },
   {
-    id: 4,
-    seats: 6,
-    zone: "Terraza",
+    id: 2,
+    numero: "02",
+    seats: 2,
+    zone: "Salón principal",
+    zoneId: "salon",
+    shape: "redonda",
+    posX: 4.5,
+    posY: 1.5,
     status: "reserved",
     detail: "20:30",
+  },
+  {
+    id: 3,
+    numero: "03",
+    seats: 4,
+    zone: "Salón principal",
+    zoneId: "salon",
+    shape: "cuadrada",
+    posX: 7.5,
+    posY: 1.5,
+    status: "reserved",
+    detail: "21:00",
+  },
+  {
+    id: 4,
+    numero: "04",
+    seats: 4,
+    zone: "Salón principal",
+    zoneId: "salon",
+    shape: "cuadrada",
+    posX: 10,
+    posY: 1.5,
+    status: "free",
+    detail: "Disponible",
+  },
+  {
+    id: 5,
+    numero: "05",
+    seats: 6,
+    zone: "Salón principal",
+    zoneId: "salon",
+    shape: "cuadrada",
+    posX: 2,
+    posY: 4.5,
+    status: "reserved",
+    detail: "20:15",
     badge: "6 pers.",
   },
-  { id: 5, seats: 2, zone: "Salón", status: "occupied", detail: "18 min" },
   {
     id: 6,
-    seats: 4,
-    zone: "Salón",
+    numero: "06",
+    seats: 2,
+    zone: "Salón principal",
+    zoneId: "salon",
+    shape: "redonda",
+    posX: 5.5,
+    posY: 4.5,
     status: "occupied",
     detail: "51 min",
     badge: "Cocina",
   },
-  { id: 7, seats: 4, zone: "Salón", status: "free", detail: "Disponible" },
+  {
+    id: 7,
+    numero: "07",
+    seats: 4,
+    zone: "Terraza",
+    zoneId: "terraza",
+    shape: "cuadrada",
+    posX: 14,
+    posY: 2,
+    status: "reserved",
+    detail: "21:30",
+  },
   {
     id: 8,
-    seats: 8,
-    zone: "Salón",
+    numero: "08",
+    seats: 4,
+    zone: "Terraza",
+    zoneId: "terraza",
+    shape: "cuadrada",
+    posX: 17,
+    posY: 2,
+    status: "free",
+    detail: "Disponible",
+  },
+  {
+    id: 9,
+    numero: "09",
+    seats: 2,
+    zone: "Terraza",
+    zoneId: "terraza",
+    shape: "redonda",
+    posX: 20,
+    posY: 2,
+    status: "blocked",
+    detail: "Mantenimiento",
+  },
+  {
+    id: 10,
+    numero: "10",
+    seats: 6,
+    zone: "Terraza",
+    zoneId: "terraza",
+    shape: "cuadrada",
+    posX: 15,
+    posY: 5,
     status: "reserved",
-    detail: "21:00",
+    detail: "20:45",
+    badge: "6 pers.",
+  },
+  {
+    id: 11,
+    numero: "11",
+    seats: 2,
+    zone: "Barra",
+    zoneId: "barra",
+    shape: "redonda",
+    posX: 1.5,
+    posY: 8.5,
+    status: "occupied",
+    detail: "25 min",
+    badge: "Lista",
+  },
+  {
+    id: 12,
+    numero: "12",
+    seats: 3,
+    zone: "Barra",
+    zoneId: "barra",
+    shape: "redonda",
+    posX: 4.5,
+    posY: 8.5,
+    status: "payment",
+    detail: "$ 1,240",
+  },
+  {
+    id: 13,
+    numero: "13",
+    seats: 8,
+    zone: "Privado",
+    zoneId: "privado",
+    shape: "cuadrada",
+    posX: 11,
+    posY: 8.5,
+    status: "reserved",
+    detail: "22:00",
     badge: "8 pers.",
   },
-  { id: 9, seats: 2, zone: "Salón", status: "free", detail: "Disponible" },
+  {
+    id: 14,
+    numero: "14",
+    seats: 10,
+    zone: "Privado",
+    zoneId: "privado",
+    shape: "cuadrada",
+    posX: 17,
+    posY: 8.5,
+    status: "free",
+    detail: "Disponible",
+  },
 ]
 
 const statusLabels: Record<TableStatus, string> = {
@@ -65,6 +267,7 @@ const statusLabels: Record<TableStatus, string> = {
   occupied: "Ocupada",
   payment: "Por cobrar",
   reserved: "Reservada",
+  blocked: "Fuera de servicio",
 }
 
 /* ------------------------------------------------------------------ */
@@ -293,7 +496,7 @@ const initialComandas: Comanda[] = [
     id: "c101",
     numero: 101,
     mesa: 1,
-    zona: "Terraza",
+    zona: "Salón principal",
     estacion: "Cocina",
     ronda: 1,
     estado: "lista",
@@ -311,7 +514,7 @@ const initialComandas: Comanda[] = [
     id: "c102",
     numero: 102,
     mesa: 1,
-    zona: "Terraza",
+    zona: "Salón principal",
     estacion: "Barra",
     ronda: 1,
     estado: "en_preparacion",
@@ -327,7 +530,7 @@ const initialComandas: Comanda[] = [
     id: "c103",
     numero: 103,
     mesa: 6,
-    zona: "Salón",
+    zona: "Salón principal",
     estacion: "Cocina",
     ronda: 2,
     estado: "en_preparacion",
@@ -343,7 +546,7 @@ const initialComandas: Comanda[] = [
     id: "c104",
     numero: 104,
     mesa: 6,
-    zona: "Salón",
+    zona: "Salón principal",
     estacion: "Cocina",
     ronda: 1,
     estado: "enviada",
@@ -356,7 +559,7 @@ const initialComandas: Comanda[] = [
     id: "c105",
     numero: 105,
     mesa: 5,
-    zona: "Salón",
+    zona: "Salón principal",
     estacion: "Barra",
     ronda: 1,
     estado: "entregada",
@@ -555,17 +758,23 @@ function AppButton({
   className = "",
   onClick,
   ariaLabel,
+  style,
+  title,
 }: {
   children: ReactNode
   className?: string
   onClick?: () => void
   ariaLabel?: string
+  style?: CSSProperties
+  title?: string
 }) {
   return (
     <button
       aria-label={ariaLabel}
       className={className}
       onClick={onClick}
+      style={style}
+      title={title}
       type="button"
     >
       {children}
@@ -2699,7 +2908,7 @@ function TableOrderScreen({
   return (
     <section
       className="order-screen"
-      aria-label={`Tomar pedido de la mesa ${table.id}`}
+      aria-label={`Tomar pedido de la mesa ${table.numero}`}
     >
       <header className="order-topbar">
         <AppButton
@@ -2711,7 +2920,7 @@ function TableOrderScreen({
         </AppButton>
         <div className="order-title">
           <p className="eyebrow">
-            MESA {table.id} · {table.zone.toUpperCase()}
+            MESA {table.numero} · {table.zone.toUpperCase()}
           </p>
           <h2>Carta</h2>
         </div>
@@ -2902,7 +3111,7 @@ function TableOrderScreen({
                 <Icon name="receipt" size={24} />
               </div>
               <div>
-                <p className="eyebrow">PEDIDO · MESA {table.id}</p>
+                <p className="eyebrow">PEDIDO · MESA {table.numero}</p>
                 <h2>Cuenta de la mesa</h2>
                 <p>
                   {lineas.length} línea(s) · {money(total)}
@@ -3046,17 +3255,25 @@ export default function App() {
     setToast(null)
   }
 
-  const firstName = profile.name.trim().split(/\s+/)[0] || "mesero/a"
+  const firstName = profile.name.trim().split(/\s+/)[0] || "Perfil"
 
-  const visibleTables = useMemo(
-    () =>
-      tables.filter((table) => {
-        const zoneMatches = zone === "Todas" || table.zone === zone
-        const searchMatches = !searching || table.status !== "free"
-        return zoneMatches && searchMatches
-      }),
-    [searching, tables, zone],
-  )
+  const mapRef = useRef<HTMLDivElement | null>(null)
+  const [mapWidth, setMapWidth] = useState(0)
+
+  useEffect(() => {
+    const node = mapRef.current
+    if (!node) return
+    const observer = new ResizeObserver((entries) => {
+      setMapWidth(entries[0]?.contentRect.width ?? 0)
+    })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  // Escala el plano completo al ancho disponible (miniatura sin scroll).
+  const mapaAncho = salonColumnas * CELDA
+  const mapaAlto = salonFilas * CELDA
+  const mapaEscala = mapWidth > 0 ? mapWidth / mapaAncho : 0
 
   const mesasActivas = tables.filter(
     (table) => table.status === "occupied" || table.status === "payment",
@@ -3083,29 +3300,26 @@ export default function App() {
 
         <header className="app-header">
           <div className="brand-row">
-            <div>
-              <p className="eyebrow">PUNTO C · CENTRO</p>
-              <h1>Buenas noches, {firstName}</h1>
-            </div>
+            <h1>Punto C · Centro</h1>
             <AppButton
-              className="avatar"
-              ariaLabel="Abrir y editar perfil"
+              className="user-button"
+              ariaLabel={`Abrir y editar el perfil de ${profile.name}`}
               onClick={() => setProfileOpen(true)}
             >
-              {profile.photo ? (
-                <img alt="" className="avatar-image" src={profile.photo} />
-              ) : (
-                getInitials(profile.name)
-              )}
-              <span className="avatar-dot" />
+              <span className="user-button__avatar">
+                {profile.photo ? (
+                  <img
+                    alt=""
+                    className="user-button__photo"
+                    src={profile.photo}
+                  />
+                ) : (
+                  getInitials(profile.name)
+                )}
+              </span>
+              <span className="user-button__name">{firstName}</span>
+              <Icon name="chevron" size={14} />
             </AppButton>
-          </div>
-          <div className="header-meta">
-            <span className="connection-pill">
-              <span className="connection-dot" />
-              En línea
-            </span>
-            <span>Turno cena · 5 mesas</span>
           </div>
         </header>
 
@@ -3142,17 +3356,19 @@ export default function App() {
               </div>
 
               <nav className="zone-tabs" aria-label="Zonas del restaurante">
-                {["Todas", "Terraza", "Salón"].map((item) => (
-                  <AppButton
-                    className={
-                      zone === item ? "zone-chip selected" : "zone-chip"
-                    }
-                    key={item}
-                    onClick={() => setZone(item)}
-                  >
-                    {item}
-                  </AppButton>
-                ))}
+                {["Todas", ...salonZonas.map((zona) => zona.nombre)].map(
+                  (item) => (
+                    <AppButton
+                      className={
+                        zone === item ? "zone-chip selected" : "zone-chip"
+                      }
+                      key={item}
+                      onClick={() => setZone(item)}
+                    >
+                      {item}
+                    </AppButton>
+                  ),
+                )}
               </nav>
 
               {searching && (
@@ -3165,44 +3381,111 @@ export default function App() {
                 </div>
               )}
 
-              <div className="table-grid">
-                {visibleTables.map((table) => (
-                  <AppButton
-                    className={`table-card table-${table.status}`}
-                    key={table.id}
-                    onClick={() => setSelectedTable(table)}
-                    ariaLabel={`Mesa ${table.id}, ${statusLabels[table.status]}`}
+              <div
+                className="floor-map"
+                ref={mapRef}
+                aria-label="Mapa del salón"
+              >
+                <div
+                  className="floor-map__viewport"
+                  style={{ height: mapaAlto * mapaEscala }}
+                >
+                  <div
+                    className="floor-map__canvas"
+                    style={{
+                      width: mapaAncho,
+                      height: mapaAlto,
+                      transform: `scale(${mapaEscala})`,
+                    }}
                   >
-                    <div className="table-top">
-                      <span className="table-label">MESA</span>
-                      <span className="seat-count">
-                        <Icon name="users" size={14} /> {table.seats}
-                      </span>
-                    </div>
-                    <strong className="table-number">{table.id}</strong>
-                    <span className="table-status">
-                      {statusLabels[table.status]}
-                    </span>
-                    <span className="table-detail">
-                      {table.status === "occupied" && (
-                        <Icon name="clock" size={14} />
-                      )}
-                      {table.status === "reserved" && (
-                        <Icon name="calendar" size={14} />
-                      )}
-                      {table.detail}
-                    </span>
-                    {table.badge && (
-                      <span className={`table-badge badge-${table.status}`}>
+                    {salonZonas.map((zona) => {
+                      const mesasZona = tables.filter(
+                        (table) => table.zoneId === zona.id,
+                      )
+                      const ocupadas = mesasZona.filter(
+                        (table) =>
+                          table.status === "occupied" ||
+                          table.status === "payment",
+                      ).length
+                      return (
+                        <div
+                          className={`floor-zona ${
+                            zone !== "Todas" && zone !== zona.nombre
+                              ? "floor-zona--dim"
+                              : ""
+                          }`}
+                          key={zona.id}
+                          style={{
+                            left: zona.x * CELDA,
+                            top: zona.y * CELDA,
+                            width: zona.ancho * CELDA,
+                            height: zona.alto * CELDA,
+                          }}
+                        >
+                          <div className="floor-zona__head">
+                            <strong>{zona.nombre}</strong>
+                            <span>
+                              Aforo {zona.aforo} · {mesasZona.length} mesas ·{" "}
+                              {ocupadas} ocupadas
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    })}
+
+                    {tables.map((table) => (
+                      <AppButton
+                        className={[
+                          "floor-table",
+                          `floor-table--${table.status}`,
+                          `floor-table--${table.shape}`,
+                          searching && table.status === "free"
+                            ? "floor-table--dim"
+                            : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                        key={table.id}
+                        style={{
+                          left: table.posX * CELDA,
+                          top: table.posY * CELDA,
+                        }}
+                        onClick={() => setSelectedTable(table)}
+                        ariaLabel={`Mesa ${table.numero}, ${statusLabels[table.status]}${
+                          table.badge ? `, ${table.badge}` : ""
+                        }`}
+                        title={`Mesa ${table.numero} · ${statusLabels[table.status]} · ${table.seats} pax`}
+                      >
+                        <strong>{table.numero}</strong>
                         {table.badge === "Lista" && (
-                          <span className="pulse-dot" />
+                          <span
+                            className="floor-table__flag"
+                            aria-hidden="true"
+                          />
                         )}
-                        {table.badge}
-                      </span>
-                    )}
-                  </AppButton>
-                ))}
+                      </AppButton>
+                    ))}
+                  </div>
+                </div>
               </div>
+
+              <ul className="floor-legend" aria-label="Leyenda del mapa">
+                {([
+                  "free",
+                  "occupied",
+                  "payment",
+                  "reserved",
+                  "blocked",
+                ] as TableStatus[]).map((estado) => (
+                  <li key={estado}>
+                    <span
+                      className={`floor-legend__dot floor-table--${estado}`}
+                      aria-hidden="true"
+                    />
+                    {statusLabels[estado]}
+                  </li>
+                ))}
+              </ul>
             </>
           )}
 
@@ -3285,11 +3568,11 @@ export default function App() {
                 <div
                   className={`sheet-table-icon table-${selectedTable.status}`}
                 >
-                  {selectedTable.id}
+                  {selectedTable.numero}
                 </div>
                 <div>
                   <p className="eyebrow">{selectedTable.zone.toUpperCase()}</p>
-                  <h2>Mesa {selectedTable.id}</h2>
+                  <h2>Mesa {selectedTable.numero}</h2>
                   <p>
                     {statusLabels[selectedTable.status]} · {selectedTable.seats}{" "}
                     lugares
@@ -3297,7 +3580,17 @@ export default function App() {
                 </div>
               </div>
 
-              {selectedTable.status === "free" ? (
+              {selectedTable.status === "blocked" ? (
+                <div className="sheet-body">
+                  <div className="sheet-message">
+                    <Icon name="ban" />
+                    <span>
+                      <strong>Mesa fuera de servicio</strong>
+                      Bloqueada por mantenimiento; no se ofrece a comensales.
+                    </span>
+                  </div>
+                </div>
+              ) : selectedTable.status === "free" ? (
                 <div className="sheet-body">
                   <div className="sheet-message">
                     <Icon name="check" />

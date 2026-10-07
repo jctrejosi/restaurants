@@ -1,5 +1,5 @@
-import { useMemo, type RefObject } from "react"
-import { Search } from "lucide-react"
+import { useMemo, useState, type RefObject } from "react"
+import { LayoutGrid, List, Search } from "lucide-react"
 import { Tabs } from "@/components/data/Tabs"
 import { EmptyState, ErrorState } from "@/components/ui/states"
 import { Skeleton } from "@/components/ui/Skeleton"
@@ -58,6 +58,8 @@ export function CatalogoPanel({
     })
   }, [productos, categoriaId, busqueda])
 
+  const [vista, setVista] = useState<"kanban" | "lista">("kanban")
+
   const disponibles = productos.filter((producto) => !producto.agotado.agotado).length
   const agotados = productos.length - disponibles
 
@@ -79,20 +81,43 @@ export function CatalogoPanel({
             {disponibles} disponibles · {agotados} agotados · precios de la sede activa
           </div>
         </div>
-        <label className="field tp-buscador">
-          <span className="field__label">Buscar (F2)</span>
-          <span className="tp-buscador__control">
-            <Search size={14} />
-            <input
-              ref={buscadorRef}
-              className="input"
-              type="search"
-              placeholder="Producto o SKU…"
-              value={busqueda}
-              onChange={(event) => onBusqueda(event.target.value)}
-            />
-          </span>
-        </label>
+        <div className="tp-catalogo__acciones">
+          <label className="field tp-buscador">
+            <span className="field__label">Buscar (F2)</span>
+            <span className="tp-buscador__control">
+              <Search size={14} />
+              <input
+                ref={buscadorRef}
+                className="input"
+                type="search"
+                placeholder="Producto o SKU…"
+                value={busqueda}
+                onChange={(event) => onBusqueda(event.target.value)}
+              />
+            </span>
+          </label>
+
+          <div className="tp-vista" role="group" aria-label="Vista de la carta">
+            <button
+              type="button"
+              className={`button tp-vista__btn ${vista === "kanban" ? "tp-vista__btn--activa" : ""}`}
+              aria-pressed={vista === "kanban"}
+              title="Vista kanban"
+              onClick={() => setVista("kanban")}
+            >
+              <LayoutGrid size={15} />
+            </button>
+            <button
+              type="button"
+              className={`button tp-vista__btn ${vista === "lista" ? "tp-vista__btn--activa" : ""}`}
+              aria-pressed={vista === "lista"}
+              title="Vista lista"
+              onClick={() => setVista("lista")}
+            >
+              <List size={15} />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="tp-catalogo__tabs">
@@ -125,6 +150,22 @@ export function CatalogoPanel({
             description="Prueba otra categoría o limpia la búsqueda para ver más resultados."
             action={{ label: "Limpiar búsqueda", onClick: () => onBusqueda("") }}
           />
+        </div>
+      ) : vista === "lista" ? (
+        <div className="tp-lista">
+          {visibles.map((producto) => (
+            <ProductoCard
+              key={producto.id}
+              producto={producto}
+              moneda={moneda}
+              puedeAgregar={puedeAgregar}
+              onAgregar={onAgregar}
+              onPersonalizar={onPersonalizar}
+              onAgotado={onAgotado}
+              onSinPermiso={onSinPermiso}
+              vista="lista"
+            />
+          ))}
         </div>
       ) : (
         <div className="tp-grid">

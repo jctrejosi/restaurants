@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 export type IconName =
   | "arrow"
+  | "arrow-down"
   | "bag"
   | "bike"
   | "card"
@@ -23,6 +24,7 @@ export type IconName =
 export default function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   const paths: Record<IconName, ReactNode> = {
     arrow: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
+    "arrow-down": <><path d="M12 5v14" /><path d="m6 13 6 6 6-6" /></>,
     bag: <><path d="M6 8h12l-1 12H7L6 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></>,
     bike: <><circle cx="5" cy="17" r="3" /><circle cx="19" cy="17" r="3" /><path d="m5 17 4-8h4l3 8M8 12h7M14 7h3" /></>,
     card: <><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="M3 10h18" /><path d="M7 15h3" /></>,

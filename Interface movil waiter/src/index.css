@@ -95,7 +95,15 @@ button:focus-visible {
   padding: 16px 18px 18px;
   background: var(--brand);
   color: white;
-  border-radius: 0 0 24px 24px;
+}
+
+.app-header h1 {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .brand-row,
@@ -143,38 +151,51 @@ h2 {
   line-height: 1.15;
 }
 
-.avatar {
-  position: relative;
-  width: 46px;
-  height: 46px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 1px solid rgb(255 255 255 / 30%);
-  border-radius: 50%;
-  background: rgb(255 255 255 / 14%);
+.user-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 10px 0 6px;
+  border: 1px solid rgb(255 255 255 / 32%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 16%);
   color: white;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.avatar-image {
+.user-button:active {
+  background: rgb(255 255 255 / 26%);
+}
+
+.user-button__avatar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 22%);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.user-button__photo {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: 8px;
   object-fit: cover;
 }
 
-.avatar-dot {
-  position: absolute;
-  right: 0;
-  bottom: 1px;
-  width: 11px;
-  height: 11px;
-  border: 2px solid var(--brand);
-  border-radius: 50%;
-  background: #9ad18b;
+.user-button__name {
+  overflow: hidden;
+  max-width: 92px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .header-meta {
@@ -207,7 +228,7 @@ h2 {
 }
 
 .content {
-  height: calc(100% - 184px);
+  height: calc(100% - 110px);
   overflow-y: auto;
   padding: 18px 16px 108px;
   scrollbar-width: none;
@@ -340,6 +361,189 @@ h2 {
   color: var(--brand-dark);
   font-weight: 700;
   cursor: pointer;
+}
+
+/* Mapa del salón (mismo plano del admin), escalado para verse completo */
+.floor-map {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.floor-map__viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.floor-map__canvas {
+  position: relative;
+  transform-origin: top left;
+  background-image:
+    linear-gradient(to right, rgb(214 208 201 / 38%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(214 208 201 / 38%) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.floor-zona {
+  position: absolute;
+  z-index: 0;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: rgb(250 247 242 / 62%);
+  transition: opacity 0.2s ease;
+}
+
+.floor-zona--dim {
+  opacity: 0.28;
+}
+
+.floor-zona__head {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: 100%;
+  padding: 6px 12px;
+}
+
+.floor-zona__head strong {
+  color: var(--ink);
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.floor-zona__head span {
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+.floor-table {
+  position: absolute;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 2px 7px rgb(75 57 42 / 12%);
+  transform: translate(-50%, -50%);
+  transition:
+    transform 0.12s ease,
+    opacity 0.2s ease;
+}
+
+/* Área táctil algo mayor que el punto visible del plano. */
+.floor-table::before {
+  position: absolute;
+  inset: -7px;
+  border-radius: inherit;
+  content: "";
+}
+
+.floor-table:active {
+  transform: translate(-50%, -50%) scale(0.93);
+}
+
+.floor-table--redonda {
+  border-radius: 50%;
+}
+
+.floor-table strong {
+  font-family: "Fraunces", serif;
+  font-size: 26px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.floor-table--free {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--ink-muted);
+}
+
+.floor-table--occupied {
+  border-color: #b9c9b3;
+  background: var(--leaf-soft);
+  color: var(--leaf);
+}
+
+.floor-table--payment {
+  border-color: #e8c99b;
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.floor-table--reserved {
+  border-color: #e6bfae;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+}
+
+.floor-table--blocked {
+  border-color: var(--border);
+  background: repeating-linear-gradient(
+    45deg,
+    #f0ede9 0 5px,
+    #e4dfd9 5px 10px
+  );
+  color: var(--ink-muted);
+}
+
+.floor-table--dim {
+  opacity: 0.3;
+}
+
+.floor-table__flag {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--leaf);
+  box-shadow: 0 0 0 2px rgb(63 107 74 / 18%);
+}
+
+.floor-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 14px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.floor-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-muted);
+  font-size: 10px;
+}
+
+.floor-legend__dot {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+}
+
+.table-blocked {
+  border-color: var(--border);
+  background: repeating-linear-gradient(45deg, #f0ede9 0 5px, #e4dfd9 5px 10px);
 }
 
 .table-grid {
