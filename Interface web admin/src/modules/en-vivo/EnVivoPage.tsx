@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
-import { Pause, Play, Plus } from "lucide-react"
+import { CalendarPlus, Plus } from "lucide-react"
 import { PageHeader } from "@/components/data/PageHeader"
 import { Button } from "@/components/ui/Button"
 import { ErrorState } from "@/components/ui/states"
@@ -14,22 +14,20 @@ import { SalonMapPanel } from "@/modules/en-vivo/components/SalonMapPanel"
 import { AlertsPanel } from "@/modules/en-vivo/components/AlertsPanel"
 import { ReservationsPanel } from "@/modules/en-vivo/components/ReservationsPanel"
 
-function useClock(activo: boolean): Date {
+function useClock(): Date {
   const [ahora, setAhora] = useState(() => new Date())
   useEffect(() => {
-    if (!activo) return
     const timer = setInterval(() => setAhora(new Date()), 1_000)
     return () => clearInterval(timer)
-  }, [activo])
+  }, [])
   return ahora
 }
 
 export default function EnVivoPage() {
-  const [pausado, setPausado] = useState(false)
-  const { data, isLoading, isError, refetch } = useEnVivoResumen(pausado)
+  const { data, isLoading, isError, refetch } = useEnVivoResumen()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const ahora = useClock(!pausado)
+  const ahora = useClock()
 
   useSocketEvent(
     ["pedido.creado", "pedido.estado", "comanda.estado", "alerta.creada"],
@@ -53,16 +51,15 @@ export default function EnVivoPage() {
         subtitle="Una vista clara de lo que está pasando ahora en tu restaurante."
         actions={
           <>
-            <div className={`live-status ${pausado ? "live-status--paused" : ""}`}>
+            <div className="live-status">
               <span className="live-dot" />
               <div>
-                <strong>{pausado ? "Actualización pausada" : "En vivo"}</strong>
+                <strong>En vivo</strong>
                 <small>Actualizado {actualizado}</small>
               </div>
             </div>
-            <Button variant="secondary" onClick={() => setPausado((value) => !value)}>
-              {pausado ? <Play size={15} /> : <Pause size={15} />}
-              {pausado ? "Reanudar" : "Pausar"}
+            <Button variant="secondary" onClick={() => navigate("/reservas?nueva=1")}>
+              <CalendarPlus size={16} /> Nueva reserva
             </Button>
             <Button variant="primary" onClick={() => navigate("/tomar-pedido")}>
               <Plus size={17} /> Nuevo pedido

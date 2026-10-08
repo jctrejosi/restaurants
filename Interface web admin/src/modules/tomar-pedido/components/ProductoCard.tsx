@@ -1,4 +1,4 @@
-import { AlertTriangle, Plus, SlidersHorizontal } from "lucide-react"
+import { AlertTriangle, Plus, ShoppingCart, SlidersHorizontal } from "lucide-react"
 import { MoneyCell } from "@/components/data/cells"
 import { StatusBadge } from "@/components/ui/StatusBadge"
 import { formatDateTime } from "@/lib/format"
@@ -22,6 +22,7 @@ export function ProductoCard({
   onAgotado,
   onSinPermiso,
   vista = "tarjeta",
+  cantidad = 0,
 }: {
   producto: ProductoCarta
   moneda?: string
@@ -31,7 +32,10 @@ export function ProductoCard({
   onAgotado: (producto: ProductoCarta) => void
   onSinPermiso?: () => void
   vista?: "tarjeta" | "lista"
+  /** Piezas de este producto ya en el pedido actual (0 = ninguna). */
+  cantidad?: number
 }) {
+  const enPedido = cantidad > 0
   const agotado = producto.agotado.agotado
   const requiereEleccion = producto.grupos.some((grupo) => grupo.minimo > 0)
   const accion = agotado ? onAgotado : requiereEleccion ? onPersonalizar : onAgregar
@@ -91,11 +95,17 @@ export function ProductoCard({
     </span>
   ) : null
 
+  const chipCantidad = enPedido ? (
+    <span className="tp-cantidad" title={`${cantidad} en el pedido actual`}>
+      <ShoppingCart size={11} /> {cantidad}
+    </span>
+  ) : null
+
   if (vista === "lista") {
     return (
       <button
         type="button"
-        className={`tp-producto tp-producto--fila ${agotado ? "tp-producto--agotado" : ""}`}
+        className={`tp-producto tp-producto--fila ${agotado ? "tp-producto--agotado" : ""} ${enPedido ? "tp-producto--en-pedido" : ""}`}
         title={titulo}
         aria-disabled={!puedeAgregar || agotado}
         onClick={onClick}
@@ -114,11 +124,12 @@ export function ProductoCard({
           {detalleAgotado}
         </span>
 
-        <span className="tp-fila__estacion">{producto.estacion ? producto.estacion.nombre : "Sin estación"}</span>
-
         <MoneyCell centavos={producto.centavos} moneda={moneda} />
 
-        <span className="tp-fila__accion">{hint}</span>
+        <span className="tp-fila__accion">
+          {chipCantidad}
+          {hint}
+        </span>
       </button>
     )
   }
@@ -126,7 +137,7 @@ export function ProductoCard({
   return (
     <button
       type="button"
-      className={`tp-producto ${agotado ? "tp-producto--agotado" : ""}`}
+      className={`tp-producto ${agotado ? "tp-producto--agotado" : ""} ${enPedido ? "tp-producto--en-pedido" : ""}`}
       title={titulo}
       aria-disabled={!puedeAgregar || agotado}
       onClick={onClick}
@@ -137,6 +148,7 @@ export function ProductoCard({
         </span>
         <span className="tp-producto__etiquetas">{etiquetas}</span>
         {agotado ? <StatusBadge tone="amber">Agotado</StatusBadge> : null}
+        {chipCantidad}
       </span>
 
       <strong className="tp-producto__nombre">{producto.nombre}</strong>
@@ -146,10 +158,7 @@ export function ProductoCard({
 
       <span className="tp-producto__pie">
         <MoneyCell centavos={producto.centavos} moneda={moneda} />
-        <span className="tp-producto__meta">
-          {producto.estacion ? producto.estacion.nombre : "Sin estación"}
-          {hint}
-        </span>
+        {hint}
       </span>
       {!producto.estacion && !agotado ? (
         <span className="tp-producto__aviso-sin-estacion" title="No genera comanda: no llega a cocina">

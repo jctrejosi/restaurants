@@ -23,6 +23,7 @@ export function CatalogoPanel({
   buscadorRef,
   puedeAgregar,
   moneda,
+  cantidades,
   onAgregar,
   onPersonalizar,
   onAgotado,
@@ -40,6 +41,8 @@ export function CatalogoPanel({
   buscadorRef: RefObject<HTMLInputElement | null>
   puedeAgregar: boolean
   moneda?: string
+  /** Piezas por producto en el pedido actual (para resaltar y mostrar la cantidad). */
+  cantidades: Map<string, number>
   onAgregar: (producto: ProductoCarta) => void
   onPersonalizar: (producto: ProductoCarta) => void
   onAgotado: (producto: ProductoCarta) => void
@@ -164,6 +167,7 @@ export function CatalogoPanel({
               onAgotado={onAgotado}
               onSinPermiso={onSinPermiso}
               vista="lista"
+              cantidad={cantidades.get(producto.id) ?? 0}
             />
           ))}
         </div>
@@ -179,6 +183,7 @@ export function CatalogoPanel({
               onPersonalizar={onPersonalizar}
               onAgotado={onAgotado}
               onSinPermiso={onSinPermiso}
+              cantidad={cantidades.get(producto.id) ?? 0}
             />
           ))}
         </div>

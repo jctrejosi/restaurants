@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useSearchParams } from "react-router-dom"
-import { RefreshCcw, ShoppingCart, Users } from "lucide-react"
+import { ShoppingCart, Users } from "lucide-react"
 import { PageHeader } from "@/components/data/PageHeader"
 import { Button } from "@/components/ui/Button"
 import { Drawer } from "@/components/ui/Drawer"
@@ -159,6 +159,12 @@ export default function TomarPedidoPage() {
     () => calcularTotales(lineas, descuento, propinaPct),
     [lineas, descuento, propinaPct],
   )
+
+  const cantidadesEnPedido = useMemo(() => {
+    const mapa = new Map<string, number>()
+    for (const linea of lineas) mapa.set(linea.productoId, (mapa.get(linea.productoId) ?? 0) + linea.cantidad)
+    return mapa
+  }, [lineas])
 
   const payload: BorradorPayload = useMemo(
     () => ({
@@ -601,21 +607,10 @@ export default function TomarPedidoPage() {
         title="Tomar pedido"
         subtitle="Captura manual en caja: arma el carrito, envía a cocina y pasa el cobro a Caja (V1)."
         actions={
-          <>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                void carta.refetch()
-                void contexto.refetch()
-              }}
-            >
-              <RefreshCcw size={15} /> Actualizar
-            </Button>
-            <Button variant="primary" onClick={() => setCarritoAbierto(true)}>
-              <ShoppingCart size={16} /> Ver pedido
-              {unidades > 0 ? ` · ${formatMoney(totales.totalCentavos, moneda)}` : ""}
-            </Button>
-          </>
+          <Button variant="primary" onClick={() => setCarritoAbierto(true)}>
+            <ShoppingCart size={16} /> Enviar pedido
+            {unidades > 0 ? ` · ${formatMoney(totales.totalCentavos, moneda)}` : ""}
+          </Button>
         }
       />
 
@@ -662,6 +657,7 @@ export default function TomarPedidoPage() {
         buscadorRef={buscadorRef}
         puedeAgregar={puedeCrear}
         moneda={moneda}
+        cantidades={cantidadesEnPedido}
         onAgregar={agregarProducto}
         onPersonalizar={(producto) => {
           setLineaMods(null)

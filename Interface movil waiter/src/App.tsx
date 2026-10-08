@@ -1183,9 +1183,13 @@ function ComandaCard({
       <AppButton
         className="comanda-main"
         onClick={() => onOpen(comanda)}
-        ariaLabel={`Pedido ${comanda.numero}, mesa ${comanda.mesa}, ${comandaEstadoLabels[comanda.estado]}`}
+        ariaLabel={`Mesa ${comanda.mesa}, pedido ${comanda.numero}, ${comandaEstadoLabels[comanda.estado]}`}
       >
         <div className="comanda-head">
+          <div className="comanda-table">
+            <strong>Mesa {String(comanda.mesa).padStart(2, "0")}</strong>
+            <span>{comanda.zona}</span>
+          </div>
           <span className="comanda-num">#{comanda.numero}</span>
           <span className="comanda-station">
             <Icon name="flame" size={13} /> {comanda.estacion}
@@ -1195,9 +1199,6 @@ function ComandaCard({
           </span>
         </div>
         <div className="comanda-meta">
-          <span>
-            Mesa {comanda.mesa} · {comanda.zona}
-          </span>
           <span>
             Ronda {comanda.ronda} · {comanda.enviada}
           </span>
@@ -1401,24 +1402,18 @@ function ComandasView({
           <span>Cuando envíes una ronda a cocina aparecerá aquí.</span>
         </div>
       ) : (
-        grouped.map((group) => (
-          <section className="comanda-group" key={group.mesa}>
-            <header className="comanda-group-head">
-              <span className="group-mesa">Mesa {group.mesa}</span>
-              <span className="group-zone">{group.zona}</span>
-            </header>
-            {group.comandas.map((comanda) => (
-              <ComandaCard
-                comanda={comanda}
-                key={comanda.id}
-                onAnular={setAnnulling}
-                onEntregar={entregar}
-                onOpen={setSelected}
-                onReenviar={setResending}
-              />
-            ))}
-          </section>
-        ))
+        grouped
+          .flatMap((group) => group.comandas)
+          .map((comanda) => (
+            <ComandaCard
+              comanda={comanda}
+              key={comanda.id}
+              onAnular={setAnnulling}
+              onEntregar={entregar}
+              onOpen={setSelected}
+              onReenviar={setResending}
+            />
+          ))
       )}
 
       <p className="comandas-foot">

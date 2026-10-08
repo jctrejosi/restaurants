@@ -40,6 +40,16 @@ export function SidebarNav({
         mobileOpen ? "sidebar--mobile-open" : ""
       }`}
     >
+      <button
+        type="button"
+        className="sidebar__collapse"
+        onClick={onCollapse}
+        title={collapsed ? "Expandir menú" : "Contraer menú"}
+        aria-label={collapsed ? "Expandir menú" : "Contraer menú"}
+      >
+        {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+      </button>
+
       <div className="sidebar__top">
         <Logo collapsed={collapsed} />
         <IconButton label="Cerrar menú" className="mobile-close" onClick={onCloseMobile}>
@@ -85,24 +95,21 @@ export function SidebarNav({
             })}
           </div>
         ))}
+        <div className="nav-group">
+          {!collapsed ? <div className="nav-group__label">Ayuda</div> : null}
+          <NavLink
+            to={AYUDA.path}
+            onClick={onCloseMobile}
+            title={collapsed ? AYUDA.nombre : undefined}
+            className={({ isActive }) =>
+              `button button--ghost nav-item ${isActive ? "nav-item--active" : ""}`
+            }
+          >
+            <HelpCircle size={18} />
+            {!collapsed ? <span className="nav-item__text">{AYUDA.nombre}</span> : null}
+          </NavLink>
+        </div>
       </nav>
-
-      <div className="sidebar__bottom">
-        <NavLink
-          to={AYUDA.path}
-          onClick={onCloseMobile}
-          className={({ isActive }) =>
-            `button button--ghost nav-item ${isActive ? "nav-item--active" : ""}`
-          }
-        >
-          <HelpCircle size={18} />
-          {!collapsed ? <span className="nav-item__text">{AYUDA.nombre}</span> : null}
-        </NavLink>
-        <button type="button" className="button button--ghost collapse-button" onClick={onCollapse}>
-          {collapsed ? <ChevronRight size={17} /> : <ChevronLeft size={17} />}
-          {!collapsed ? <span>Contraer menú</span> : null}
-        </button>
-      </div>
     </aside>
   )
 }
