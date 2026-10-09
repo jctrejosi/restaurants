@@ -9,7 +9,7 @@ import {
   type SetStateAction,
 } from "react"
 
-type IconName = "alert" | "arrow-left" | "badge" | "ban" | "bell" | "calendar" | "camera" | "check" | "chevron" | "clock" | "flame" | "grid" | "history" | "lock" | "mail" | "phone" | "printer" | "receipt" | "refresh" | "save" | "search" | "sliders" | "spark" | "user" | "users" | "vibrate" | "wifi" | "x"
+type IconName = "alert" | "arrow-left" | "badge" | "ban" | "bell" | "calendar" | "camera" | "chat" | "check" | "chevron" | "clock" | "flame" | "grid" | "history" | "lock" | "mail" | "phone" | "printer" | "receipt" | "refresh" | "save" | "search" | "send" | "sliders" | "spark" | "user" | "users" | "vibrate" | "wifi" | "x"
 
 type TableStatus = "free" | "occupied" | "payment" | "reserved" | "blocked"
 
@@ -572,6 +572,153 @@ const initialComandas: Comanda[] = [
   },
 ]
 
+/* ------------------------------------------------------------------ */
+/* Chat interno (módulo 05)                                            */
+/* ------------------------------------------------------------------ */
+
+type ChatMensaje = {
+  id: string
+  canalId: string
+  autor: string
+  esMio: boolean
+  texto: string
+  hora: string
+  sistema?: boolean
+  estado?: "enviado" | "leido"
+}
+
+type ChatCanal = {
+  id: string
+  nombre: string
+  icon: IconName
+  noLeidos: number
+  mensajes: ChatMensaje[]
+}
+
+const chatQuickReplies = [
+  "Mesa lista",
+  "Falta stock",
+  "Puedo apoyar",
+  "Va en camino",
+  "¿Cuánto falta?",
+]
+
+const initialChatCanales: ChatCanal[] = [
+  {
+    id: "cocina",
+    nombre: "Cocina",
+    icon: "flame",
+    noLeidos: 0,
+    mensajes: [
+      {
+        id: "cm1",
+        canalId: "cocina",
+        autor: "Cocina",
+        esMio: false,
+        texto: "Recibimos la ronda 2 de la mesa 06.",
+        hora: "19:21",
+      },
+      {
+        id: "cm2",
+        canalId: "cocina",
+        autor: "Tú",
+        esMio: true,
+        texto: "Perfecto, ¿tiempo estimado?",
+        hora: "19:22",
+        estado: "leido",
+      },
+      {
+        id: "cm3",
+        canalId: "cocina",
+        autor: "Cocina",
+        esMio: false,
+        texto: "12 minutos para la pechuga.",
+        hora: "19:23",
+      },
+    ],
+  },
+  {
+    id: "barra",
+    nombre: "Barra",
+    icon: "spark",
+    noLeidos: 0,
+    mensajes: [
+      {
+        id: "cb1",
+        canalId: "barra",
+        autor: "Barra",
+        esMio: false,
+        texto: "Las limonadas 2x1 terminan hoy, avisen a sus mesas.",
+        hora: "18:05",
+      },
+    ],
+  },
+  {
+    id: "admin",
+    nombre: "Administración",
+    icon: "badge",
+    noLeidos: 1,
+    mensajes: [
+      {
+        id: "ca1",
+        canalId: "admin",
+        autor: "Administración",
+        esMio: false,
+        texto: "Recordatorio: cierre de turno a las 23:30.",
+        hora: "18:40",
+      },
+    ],
+  },
+  {
+    id: "caja",
+    nombre: "Caja",
+    icon: "receipt",
+    noLeidos: 1,
+    mensajes: [
+      {
+        id: "cc1",
+        canalId: "caja",
+        autor: "Caja",
+        esMio: false,
+        texto: "La mesa 12 ya puede cobrar cuando quieras.",
+        hora: "19:30",
+      },
+    ],
+  },
+  {
+    id: "equipo",
+    nombre: "Equipo de piso",
+    icon: "users",
+    noLeidos: 2,
+    mensajes: [
+      {
+        id: "ce1",
+        canalId: "equipo",
+        autor: "Laura P.",
+        esMio: false,
+        texto: "Estoy en la mesa 11 por si necesitan apoyo.",
+        hora: "19:10",
+      },
+    ],
+  },
+  {
+    id: "directo-maria",
+    nombre: "María G. · Capitán",
+    icon: "user",
+    noLeidos: 0,
+    mensajes: [
+      {
+        id: "cd1",
+        canalId: "directo-maria",
+        autor: "María G.",
+        esMio: false,
+        texto: "Cuando puedas, valida la cortesía de la mesa 13.",
+        hora: "19:15",
+      },
+    ],
+  },
+]
+
 type IconProps = {
   name: IconName
   size?: number
@@ -603,6 +750,12 @@ function Icon({ name, size = 22 }: IconProps) {
       <>
         <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z" />
         <circle cx="12" cy="13" r="3.5" />
+      </>
+    ),
+    chat: (
+      <>
+        <path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z" />
+        <path d="M8.5 11.5h7M8.5 15h4" />
       </>
     ),
     lock: (
@@ -701,6 +854,12 @@ function Icon({ name, size = 22 }: IconProps) {
       <>
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-4-4" />
+      </>
+    ),
+    send: (
+      <>
+        <path d="M22 2 11 13" />
+        <path d="M22 2 15 22l-4-9-9-4 20-7Z" />
       </>
     ),
     spark: (
@@ -3199,6 +3358,155 @@ function TableOrderScreen({
   )
 }
 
+function ChatScreen({
+  canales,
+  onClose,
+  onEnviar,
+  onLeer,
+}: {
+  canales: ChatCanal[]
+  onClose: () => void
+  onEnviar: (canalId: string, texto: string) => void
+  onLeer: (canalId: string) => void
+}) {
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [texto, setTexto] = useState("")
+  const threadRef = useRef<HTMLDivElement | null>(null)
+
+  const activo = canales.find((canal) => canal.id === activeId) ?? null
+
+  useEffect(() => {
+    const node = threadRef.current
+    if (node) node.scrollTop = node.scrollHeight
+  }, [activeId, activo?.mensajes.length])
+
+  function abrir(id: string) {
+    setActiveId(id)
+    onLeer(id)
+  }
+
+  function enviar() {
+    const limpio = texto.trim()
+    if (!limpio || !activo) return
+    onEnviar(activo.id, limpio)
+    setTexto("")
+  }
+
+  return (
+    <section className="profile-screen" aria-label="Mensajes internos">
+      <header className="profile-topbar">
+        <AppButton
+          className="profile-back"
+          ariaLabel={activo ? "Volver a mensajes" : "Cerrar mensajes"}
+          onClick={() => (activo ? setActiveId(null) : onClose())}
+        >
+          <Icon name="arrow-left" size={20} />
+        </AppButton>
+        <h2 className="profile-title">{activo ? activo.nombre : "Mensajes"}</h2>
+        <span className="profile-topbar-spacer" />
+      </header>
+
+      {!activo ? (
+        <div className="profile-scroll">
+          <p className="chat-hint">
+            Coordina con cocina, barra, caja y administración sin salir del
+            turno.
+          </p>
+          <ul className="chat-list">
+            {canales.map((canal) => {
+              const ultimo = canal.mensajes[canal.mensajes.length - 1]
+              return (
+                <li key={canal.id}>
+                  <AppButton
+                    className="chat-row"
+                    onClick={() => abrir(canal.id)}
+                    ariaLabel={`${canal.nombre}${
+                      canal.noLeidos > 0 ? `, ${canal.noLeidos} sin leer` : ""
+                    }`}
+                  >
+                    <span className="chat-row__icon">
+                      <Icon name={canal.icon} size={18} />
+                    </span>
+                    <span className="chat-row__body">
+                      <span className="chat-row__top">
+                        <strong>{canal.nombre}</strong>
+                        <small>{ultimo?.hora}</small>
+                      </span>
+                      <span className="chat-row__preview">
+                        {ultimo?.esMio && !ultimo?.sistema ? "Tú: " : ""}
+                        {ultimo?.texto}
+                      </span>
+                    </span>
+                    {canal.noLeidos > 0 && (
+                      <span className="chat-row__badge">{canal.noLeidos}</span>
+                    )}
+                  </AppButton>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ) : (
+        <>
+          <div className="chat-thread" ref={threadRef}>
+            {activo.mensajes.map((mensaje) => (
+              <div
+                className={`chat-msg ${mensaje.esMio ? "mine" : ""} ${
+                  mensaje.sistema ? "system" : ""
+                }`}
+                key={mensaje.id}
+              >
+                {!mensaje.esMio && !mensaje.sistema && (
+                  <span className="chat-msg__autor">{mensaje.autor}</span>
+                )}
+                <p>{mensaje.texto}</p>
+                <span className="chat-msg__hora">
+                  {mensaje.hora}
+                  {mensaje.esMio && mensaje.estado
+                    ? ` · ${mensaje.estado === "leido" ? "Leído" : "Enviado"}`
+                    : ""}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="chat-replies">
+            {chatQuickReplies.map((respuesta) => (
+              <AppButton
+                className="zone-chip"
+                key={respuesta}
+                onClick={() => onEnviar(activo.id, respuesta)}
+              >
+                {respuesta}
+              </AppButton>
+            ))}
+          </div>
+
+          <div className="chat-composer">
+            <input
+              aria-label={`Mensaje a ${activo.nombre}`}
+              className="chat-input"
+              onChange={(event) => setTexto(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") enviar()
+              }}
+              placeholder={`Mensaje a ${activo.nombre}`}
+              value={texto}
+            />
+            <AppButton
+              className="chat-send"
+              ariaLabel="Enviar mensaje"
+              onClick={enviar}
+            >
+              <Icon name="send" size={18} />
+            </AppButton>
+          </div>
+        </>
+      )}
+    </section>
+  )
+}
+
 export default function App() {
   const [zone, setZone] = useState("Todas")
   const [selectedTable, setSelectedTable] = useState<RestaurantTable | null>(
@@ -3214,6 +3522,9 @@ export default function App() {
   const [toast, setToast] = useState<Aviso | null>(null)
   const [tables, setTables] = useState<RestaurantTable[]>(initialTables)
   const [orderTable, setOrderTable] = useState<RestaurantTable | null>(null)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatCanales, setChatCanales] =
+    useState<ChatCanal[]>(initialChatCanales)
 
   const nextNumero =
     comandas.reduce((max, comanda) => Math.max(max, comanda.numero), 100) + 1
@@ -3235,6 +3546,91 @@ export default function App() {
   function recibirComandas(nuevas: Comanda[]) {
     if (nuevas.length === 0) return
     setComandas((current) => [...nuevas, ...current])
+    const mesa = nuevas[0]?.mesa
+    setChatCanales((current) =>
+      current.map((canal) =>
+        canal.id === "cocina"
+          ? {
+              ...canal,
+              mensajes: [
+                ...canal.mensajes,
+                {
+                  id: `chat-sys-${Date.now()}`,
+                  canalId: "cocina",
+                  autor: "Sistema",
+                  esMio: false,
+                  sistema: true,
+                  texto: `Nueva comanda · Mesa ${String(mesa).padStart(2, "0")} · ${nuevas.length} ticket(s)`,
+                  hora: "19:42",
+                },
+              ],
+            }
+          : canal,
+      ),
+    )
+  }
+
+  const chatNoLeidos = chatCanales.reduce(
+    (total, canal) => total + canal.noLeidos,
+    0,
+  )
+
+  function enviarChat(canalId: string, texto: string) {
+    setChatCanales((current) =>
+      current.map((canal) =>
+        canal.id === canalId
+          ? {
+              ...canal,
+              mensajes: [
+                ...canal.mensajes,
+                {
+                  id: `chat-${Date.now()}`,
+                  canalId,
+                  autor: profile.name,
+                  esMio: true,
+                  texto,
+                  hora: "19:42",
+                  estado: "enviado",
+                },
+              ],
+            }
+          : canal,
+      ),
+    )
+    if (canalId === "cocina") {
+      window.setTimeout(() => {
+        setChatCanales((current) =>
+          current.map((canal) =>
+            canal.id === "cocina"
+              ? {
+                  ...canal,
+                  mensajes: [
+                    ...canal.mensajes,
+                    {
+                      id: `chat-r-${Date.now()}`,
+                      canalId: "cocina",
+                      autor: "Cocina",
+                      esMio: false,
+                      texto: "Recibido, en unos minutos.",
+                      hora: "19:42",
+                    },
+                  ],
+                }
+              : canal,
+          ),
+        )
+      }, 1500)
+    }
+  }
+
+  function leerChat(canalId: string) {
+    setChatCanales((current) =>
+      current.map((canal) =>
+        canal.id === canalId && canal.noLeidos > 0
+          ? { ...canal, noLeidos: 0 }
+          : canal,
+      ),
+    )
   }
 
   const pendingAvisos = avisos.filter(
@@ -3296,25 +3692,39 @@ export default function App() {
         <header className="app-header">
           <div className="brand-row">
             <h1>Punto C · Centro</h1>
-            <AppButton
-              className="user-button"
-              ariaLabel={`Abrir y editar el perfil de ${profile.name}`}
-              onClick={() => setProfileOpen(true)}
-            >
-              <span className="user-button__avatar">
-                {profile.photo ? (
-                  <img
-                    alt=""
-                    className="user-button__photo"
-                    src={profile.photo}
-                  />
-                ) : (
-                  getInitials(profile.name)
+            <div className="header-actions">
+              <AppButton
+                className="chat-button"
+                ariaLabel={`Mensajes internos${
+                  chatNoLeidos > 0 ? `, ${chatNoLeidos} sin leer` : ""
+                }`}
+                onClick={() => setChatOpen(true)}
+              >
+                <Icon name="chat" size={20} />
+                {chatNoLeidos > 0 && (
+                  <span className="chat-button__badge">{chatNoLeidos}</span>
                 )}
-              </span>
-              <span className="user-button__name">{firstName}</span>
-              <Icon name="chevron" size={14} />
-            </AppButton>
+              </AppButton>
+              <AppButton
+                className="user-button"
+                ariaLabel={`Abrir y editar el perfil de ${profile.name}`}
+                onClick={() => setProfileOpen(true)}
+              >
+                <span className="user-button__avatar">
+                  {profile.photo ? (
+                    <img
+                      alt=""
+                      className="user-button__photo"
+                      src={profile.photo}
+                    />
+                  ) : (
+                    getInitials(profile.name)
+                  )}
+                </span>
+                <span className="user-button__name">{firstName}</span>
+                <Icon name="chevron" size={14} />
+              </AppButton>
+            </div>
           </div>
         </header>
 
@@ -3549,6 +3959,15 @@ export default function App() {
             onClose={() => setProfileOpen(false)}
             onSave={setProfile}
             profile={profile}
+          />
+        )}
+
+        {chatOpen && (
+          <ChatScreen
+            canales={chatCanales}
+            onClose={() => setChatOpen(false)}
+            onEnviar={enviarChat}
+            onLeer={leerChat}
           />
         )}
 

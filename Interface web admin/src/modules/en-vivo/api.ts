@@ -9,8 +9,8 @@ import type { EnVivoResumen, PedidoActivo } from "@/modules/en-vivo/types"
 
 const PEDIDOS: PedidoActivo[] = [
   {
-    id: "p-8831",
-    folio: "P-8831",
+    id: "p-9051",
+    folio: "P-9051",
     modalidad: "mesa",
     etiqueta: "Mesa 12",
     canal: "Salón",
@@ -32,8 +32,8 @@ const PEDIDOS: PedidoActivo[] = [
     transcurridoSeg: 19 * 60 + 40,
   },
   {
-    id: "p-8836",
-    folio: "P-8836",
+    id: "p-9053",
+    folio: "P-9053",
     modalidad: "mesa",
     etiqueta: "Mesa 05",
     canal: "Salón",
@@ -54,8 +54,8 @@ const PEDIDOS: PedidoActivo[] = [
     transcurridoSeg: 11 * 60 + 42,
   },
   {
-    id: "p-8840",
-    folio: "P-8840",
+    id: "p-9055",
+    folio: "P-9055",
     modalidad: "mesa",
     etiqueta: "Mesa 03",
     canal: "QR",

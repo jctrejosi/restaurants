@@ -78,7 +78,7 @@ export default function EnVivoPage() {
             <KpisRow kpis={data.kpis} />
           )}
 
-          <SalonMapPanel />
+          <SalonMapPanel pedidos={data?.pedidosActivos ?? []} />
 
           {isLoading || !data ? (
             <div className="dashboard-grid">

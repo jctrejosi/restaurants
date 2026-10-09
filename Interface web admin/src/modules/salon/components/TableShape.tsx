@@ -25,6 +25,7 @@ export function TableShape({
   onSeleccion,
   onMover,
   onDragStart,
+  onAbrir,
 }: {
   mesa: Mesa
   seleccionada: boolean
@@ -33,6 +34,8 @@ export function TableShape({
   onSeleccion?: (mesa: Mesa, aditivo: boolean) => void
   onMover?: (mesaId: string, posX: number, posY: number) => void
   onDragStart?: (event: DragEvent<HTMLButtonElement>, mesa: Mesa) => void
+  /** En modo preview, abre el detalle de la mesa (p. ej. desde «En vivo»). */
+  onAbrir?: (mesa: Mesa) => void
 }) {
   const teclas: Record<string, [number, number]> = {
     ArrowUp: [0, -1],
@@ -60,18 +63,20 @@ export function TableShape({
         unida ? "salon-mesa--unida" : "",
         mesa.activa ? "" : "salon-mesa--inactiva",
         modo === "preview" ? "salon-mesa--solo-lectura" : "",
+        modo === "preview" && onAbrir ? "salon-mesa--clickeable" : "",
       ]
         .filter(Boolean)
         .join(" ")}
       style={{ left: mesa.posX * CELDA, top: mesa.posY * CELDA }}
       title={tituloMesa(mesa)}
       aria-pressed={modo === "editar" ? seleccionada : undefined}
-      tabIndex={modo === "editar" ? 0 : -1}
+      tabIndex={modo === "editar" || onAbrir ? 0 : -1}
       draggable={modo === "editar"}
       onDragStart={(event) => onDragStart?.(event, mesa)}
       onClick={(event) => {
         event.stopPropagation()
         if (modo === "editar") onSeleccion?.(mesa, event.shiftKey)
+        else onAbrir?.(mesa)
       }}
       onKeyDown={onKeyDown}
     >

@@ -26,6 +26,7 @@ import {
   type PedidoPago,
   type ReembolsoTipo,
 } from "@/modules/pedidos/types"
+import "@/modules/pedidos/pedidos.css"
 
 export type PedidoTab = "resumen" | "lineas" | "comandas" | "pagos" | "bitacora"
 

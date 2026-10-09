@@ -335,6 +335,21 @@
   cursor: default;
 }
 
+.salon-mesa--clickeable {
+  cursor: pointer;
+}
+
+.salon-mesa--clickeable:hover {
+  z-index: 4;
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: var(--shadow-md);
+}
+
+.salon-mesa--clickeable:focus-visible {
+  outline: 3px solid rgba(180, 69, 31, 0.3);
+  outline-offset: 2px;
+}
+
 .salon-mesa:focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;

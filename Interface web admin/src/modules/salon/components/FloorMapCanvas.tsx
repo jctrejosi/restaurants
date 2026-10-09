@@ -16,6 +16,7 @@ export function FloorMapCanvas({
   modo,
   onSeleccion,
   onMover,
+  onAbrir,
 }: {
   zonas: Zona[]
   mesas: Mesa[]
@@ -24,6 +25,8 @@ export function FloorMapCanvas({
   modo: "editar" | "preview"
   onSeleccion?: (mesa: Mesa, aditivo: boolean) => void
   onMover?: (mesaId: string, posX: number, posY: number) => void
+  /** En modo preview, abre el detalle de la mesa. */
+  onAbrir?: (mesa: Mesa) => void
 }) {
   const columnas = Math.max(16, ...zonas.map((zona) => zona.x + zona.ancho))
   const filas = Math.max(10, ...zonas.map((zona) => zona.y + zona.alto))
@@ -86,6 +89,7 @@ export function FloorMapCanvas({
           unida={unidas.has(mesa.id)}
           modo={modo}
           onSeleccion={onSeleccion}
+          onAbrir={onAbrir}
           onMover={modo === "editar" ? onMover : undefined}
           onDragStart={
             modo === "editar"

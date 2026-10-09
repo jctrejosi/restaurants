@@ -1,0 +1,133 @@
+/* Módulo En vivo — detalle de mesa (modal). Reutiliza `.modal*` del panel. */
+
+.mesa-detalle {
+  width: min(480px, 92vw);
+}
+
+.mesa-detalle .modal__header .icon-button {
+  margin-left: auto;
+}
+
+.mesa-detalle__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mesa-detalle__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+
+.mesa-detalle__dato {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mesa-detalle__dato span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mesa-detalle__dato strong {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mesa-detalle__seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mesa-detalle__seccion-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mesa-detalle__pedido {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-alt);
+}
+
+.mesa-detalle__pedido-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mesa-detalle__folio {
+  color: var(--ink);
+  font: 700 14px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.mesa-detalle__filas {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mesa-detalle__filas > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.mesa-detalle__filas dt {
+  color: var(--muted);
+}
+
+.mesa-detalle__filas dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.mesa-detalle__total {
+  padding-top: 7px;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.mesa-detalle__total dt,
+.mesa-detalle__total dd {
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.mesa-detalle__vacio {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .mesa-detalle__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

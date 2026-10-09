@@ -31,6 +31,7 @@ La barra inferior es **Salón · Comandas · Avisos · Historial**. `Salón` (ma
 | 01 | Comandas | Comandas | `/(app)/comandas`, `/(app)/mesa/[id]/comandas` | MVP/V1/V2 | 30–35, 82 | [01-comandas.md](./01-comandas.md) |
 | 02 | Avisos | Avisos (badge) | `/(app)/avisos` | MVP/V1/V2 | 13, 15, 35, 36, 47, 48, 63, 64 | [02-avisos.md](./02-avisos.md) |
 | 03 | Historial de pedidos | Historial | `/(app)/historial`, `/(app)/historial/[id]` | V1 | — (nuevo RF propuesto) | [03-historial.md](./03-historial.md) |
+| 05 | Chat interno | Cabecera (botón) | `/(app)` (overlay) | V1 | — (nuevo RF propuesto) | [05-chat.md](./05-chat.md) |
 
 > **Sin impresión de comandas (instalación 2026-10).** En este despliegue las comandas llegan al
 > **KDS en un TV de cocina (otra app)**; no hay impresoras. Por eso **RF-R3-70/71/72/73** (impresión)
@@ -43,6 +44,8 @@ Notas de alcance:
   (el filtro «Mis mesas» pasa a ser un chip dentro del módulo). Es un cambio de etiqueta, no de
   requisitos.
 - El módulo 03 **Historial** reemplaza el ítem «Yo» del nav; el **perfil** se abre desde el avatar.
+- El módulo **05 Chat** no es pestaña: se abre desde un botón en la cabecera (junto al usuario), con
+  badge de no leídos.
 - Fuera de esta serie: **acceso** (lock/PIN/vincular/turno), **salón** y **cuenta/cobro**, ya
   especificados en el plan 03 §6 y §14. Estos módulos **consumen** lo que esos producen
   (comandas generadas al enviar, pedidos web, reservas) pero no lo redefinen.
