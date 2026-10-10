@@ -1,6 +1,6 @@
 {
   "title": "Reserva · Punto C",
-  "description": "Facilita a los usuarios reservar mesas en restaurantes de forma rápida y sencilla, optimizando la gestión de reservas para clientes y establecimientos.",
+  "description": "Web del cliente de Punto C: reserva tu mesa y haz tu pedido para recoger o a domicilio, de forma rápida y sencilla.",
   "language": "es",
   "robots": {
     "index": false

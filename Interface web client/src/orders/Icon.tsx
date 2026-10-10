@@ -7,6 +7,7 @@ export type IconName =
   | "bike"
   | "card"
   | "cash"
+  | "calendar"
   | "chevron"
   | "check"
   | "clock"
@@ -29,6 +30,7 @@ export default function Icon({ name, size = 20 }: { name: IconName; size?: numbe
     bike: <><circle cx="5" cy="17" r="3" /><circle cx="19" cy="17" r="3" /><path d="m5 17 4-8h4l3 8M8 12h7M14 7h3" /></>,
     card: <><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="M3 10h18" /><path d="M7 15h3" /></>,
     cash: <><rect x="2.5" y="6.5" width="19" height="11" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 10v4M18 10v4" /></>,
+    calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></>,
     chevron: <path d="m9 18 6-6-6-6" />,
     check: <path d="m5 13 4 4L19 7" />,
     clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,

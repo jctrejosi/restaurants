@@ -4,12 +4,12 @@
  *
  * Uso:
  *   node dev.js              # DEV: instala dependencias faltantes y levanta
- *                            #   PostgreSQL + backend + las 5 interfaces en
+ *                            #   PostgreSQL + backend + las 4 interfaces en
  *                            #   segundo plano; espera a que el backend esté
  *                            #   listo, imprime las URLs y termina (la terminal
  *                            #   queda libre).
  *   node dev.js <flags>      # Solo lo pedido, con sus dependencias mínimas
- *                            #   (p. ej. `node dev.js --booking`).
+ *                            #   (p. ej. `node dev.js --client`).
  *   node dev.js --install    # Solo instala las dependencias (de la selección o
  *                            #   de todo) y sale. No levanta nada.
  *   node dev.js --prod       # PRODUCCIÓN ("en vivo"): builds previos requeridos
@@ -80,8 +80,7 @@ const PNPM_DEPS = {
 const C = {
   db: "\x1b[36m",
   backend: "\x1b[31m",
-  booking: "\x1b[32m",
-  orders: "\x1b[33m",
+  client: "\x1b[32m",
   kitchen: "\x1b[35m",
   admin: "\x1b[34m",
   waiter: "\x1b[36m",
@@ -100,24 +99,14 @@ const SERVICES = [
     deps: BACKEND_DEPS,
   },
   {
-    // Web de reservas del cliente (plan 01) — proyecto Figma Make completo.
-    name: "booking",
-    dir: "Interface web booking",
+    // Web del cliente (planes 01 y 02) — un solo proyecto Figma Make.
+    // Reservas en `/` (y `/reservas`); pedidos en `/pedidos`.
+    name: "client",
+    dir: "Interface web client",
     url: "http://localhost:8450",
     dev: [PM, "run", "dev"],
     prod: [PM, "run", "preview"],
     env: { PORT: "8450" },
-    lan: true,
-    deps: PNPM_DEPS,
-  },
-  {
-    // Web de pedidos del cliente (plan 02): mesa por QR, recoger y domicilio.
-    name: "orders",
-    dir: "Interface web orders",
-    url: "http://localhost:8451",
-    dev: [PM, "run", "dev"],
-    prod: [PM, "run", "preview"],
-    env: { PORT: "8451" },
     lan: true,
     deps: PNPM_DEPS,
   },
@@ -160,12 +149,14 @@ const SERVICES = [
 
 // ── Selección por interfaz (flags --x) ──────────────────────
 // Cada interfaz declara sus dependencias; al pedirla se levanta también lo
-// mínimo para que funcione (p. ej. --booking ⇒ backend + PostgreSQL).
+// mínimo para que funcione (p. ej. --client ⇒ backend + PostgreSQL).
 const APP_ALIASES = {
-  booking: "booking",
-  reservas: "booking",
-  orders: "orders",
-  pedidos: "orders",
+  client: "client",
+  cliente: "client",
+  booking: "client",
+  reservas: "client",
+  orders: "client",
+  pedidos: "client",
   kitchen: "kitchen",
   kds: "kitchen",
   cocina: "kitchen",
@@ -183,8 +174,7 @@ const APP_ALIASES = {
 
 const APP_DEPENDS = {
   backend: ["db"],
-  booking: ["db", "backend"],
-  orders: ["db", "backend"],
+  client: ["db", "backend"],
   kitchen: ["db", "backend"],
   admin: ["db", "backend"],
   waiter: ["db", "backend"],
@@ -552,8 +542,7 @@ function stopAll() {
 
 const APP_LABELS = {
   backend: "API NestJS + Drizzle (reservas, pedidos, meseros, KDS, admin)",
-  booking: "Web de reservas del cliente (plan 01)",
-  orders: "Web de pedidos del cliente (plan 02)",
+  client: "Web del cliente — reservas (plan 01) y pedidos (plan 02)",
   kitchen: "KDS de cocina (plan 04)",
   admin: "Panel de administración (plan 05)",
   waiter: "APK del mesero — prototipo web (plan 03)",
@@ -588,9 +577,9 @@ function printHelp() {
   out.push("  --all        Todo (igual que sin flags)\n");
   out.push("Alias en español: --reservas --pedidos --kds --cocina --mesero --apk --bd\n");
   out.push("Ejemplos:");
-  out.push("  node dev.js --booking            # PostgreSQL + backend + web de reservas");
+  out.push("  node dev.js --client             # PostgreSQL + backend + web del cliente");
   out.push("  node dev.js --kds --admin        # ambas interfaces + backend + PostgreSQL");
-  out.push("  node dev.js --install --orders    # instala solo lo de la web de pedidos");
+  out.push("  node dev.js --install --client   # instala solo lo de la web del cliente");
   console.log(out.join("\n"));
 }
 

@@ -1,11 +1,12 @@
 import { FormEvent, ReactNode, useMemo, useState } from "react";
-import Icon from "./components/Icon";
-import Calendar from "./components/Calendar";
-import DateField from "./components/DateField";
-import TimeField from "./components/TimeField";
-import TimeSlots from "./components/TimeSlots";
-import { addMonths, formatLongDate, toISODate, todayISO } from "./lib/dates";
-import { getAvailabilityCount, getSlots, reservationCode } from "./lib/availability";
+import Icon from "@/components/Icon";
+import Calendar from "@/components/Calendar";
+import DateField from "@/components/DateField";
+import TimeField from "@/components/TimeField";
+import TimeSlots from "@/components/TimeSlots";
+import { addMonths, formatLongDate, toISODate, todayISO } from "@/lib/dates";
+import { getAvailabilityCount, getSlots, reservationCode } from "@/lib/availability";
+import { routeHref } from "@/lib/router";
 
 const photos = {
   hero: "https://images.unsplash.com/photo-1700625914939-30bf5479e3bc?auto=format&fit=crop&w=1800&q=88",
@@ -83,6 +84,7 @@ export default function App() {
           <AppLink href="#como-funciona">Reservas</AppLink>
           <AppLink href="#sede">Sedes</AppLink>
           <AppLink href="#historias">Nosotros</AppLink>
+          <AppLink href={routeHref("orders")}>Pedidos</AppLink>
         </nav>
         <div className="header-actions">
           <AppLink className="phone-link" href="tel:+525500000000"><Icon name="phone" size={17}/> +52 55 0000 0000</AppLink>
@@ -97,6 +99,7 @@ export default function App() {
         {["Carta", "Reservas", "Sedes", "Nosotros"].map((item, index) => (
           <AppLink href={["#carta", "#como-funciona", "#sede", "#historias"][index]} key={item}>{item}<Icon name="arrow"/></AppLink>
         ))}
+        <AppLink href={routeHref("orders")}>Pedidos<Icon name="arrow"/></AppLink>
         <p>Av. Principal 123, Ciudad de México</p>
       </nav>}
 

@@ -1,10 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
+import ClientApp from './ClientApp'
+import './booking/styles.css'
+import './orders/styles.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <ClientApp />
   </React.StrictMode>,
 )

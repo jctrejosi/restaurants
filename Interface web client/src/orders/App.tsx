@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Icon, { type IconName } from "./Icon";
 import Checkout, { type CheckoutItem } from "./Checkout";
 import dsiLogo from "./assets/logo.png";
+import { routeHref } from "@/lib/router";
 
 type PickupOrder = {
   code: string;
@@ -215,6 +216,9 @@ export default function App() {
           </button>
         </div>
         <div className="top-actions">
+          <a className="icon-button" href={routeHref("booking")} aria-label="Reservar mesa" title="Reservar mesa">
+            <Icon name="calendar" size={17} />
+          </a>
           <form className="order-code" onSubmit={(event) => { event.preventDefault(); lookupOrderCode(); }}>
             <Icon name="search" size={15} />
             <input
