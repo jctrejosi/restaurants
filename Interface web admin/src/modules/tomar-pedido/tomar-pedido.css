@@ -5,6 +5,38 @@
   position: relative;
 }
 
+/* ------------------------------- Layout -------------------------------- */
+
+/* Carta (izquierda) y pedido actual (derecha). */
+.tp-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 395px;
+  gap: 16px;
+  align-items: start;
+}
+
+.tp-catalogo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tp-carrito-col {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 118px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+/* Evita que el panel del carrito se encoja/recorte al hacer scroll en la columna. */
+.tp-carrito-col > .panel {
+  flex-shrink: 0;
+}
+
 /* --------------------------------- Barra --------------------------------- */
 
 /* Barra sobre la carta: modalidad y, solo para mesa, comensales. */
@@ -419,6 +451,23 @@
 /* En el Drawer no hace falta borde de panel ni scroll interno propio. */
 .tp-carrito--drawer .tp-carrito__lineas {
   max-height: none;
+}
+
+@media (max-width: 1080px) {
+  .tp-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-carrito-col {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .tp-carrito__lineas {
+    max-height: none;
+  }
 }
 
 .tp-carrito__cabecera {

@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { CalendarClock, Clock3, MapPin, ReceiptText, Users, UserRound, X } from "lucide-react"
+import { CalendarClock, ClipboardPenLine, Clock3, MapPin, ReceiptText, Users, UserRound, X } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { IconButton } from "@/components/ui/IconButton"
 import { StatusBadge } from "@/components/ui/StatusBadge"
@@ -137,6 +137,11 @@ export function MesaDetalleDialog({
           <Button variant="secondary" onClick={() => navigate("/salon")}>
             <MapPin size={15} /> Ver en Salón
           </Button>
+          {mesa.estado === "libre" ? (
+            <Button variant="primary" onClick={() => navigate(`/tomar-pedido?mesa=${mesa.numero}`)}>
+              <ClipboardPenLine size={15} /> Tomar pedido
+            </Button>
+          ) : null}
           {pedido ? (
             <Button variant="primary" onClick={() => onVerPedido?.(pedido.id)}>
               <ReceiptText size={15} /> Ver pedido

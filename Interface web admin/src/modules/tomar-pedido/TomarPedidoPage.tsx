@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router-dom"
 import { ShoppingCart, Users } from "lucide-react"
 import { PageHeader } from "@/components/data/PageHeader"
 import { Button } from "@/components/ui/Button"
-import { Drawer } from "@/components/ui/Drawer"
 import { IconButton } from "@/components/ui/IconButton"
 import { NoPermissionState } from "@/components/ui/states"
 import { useToast } from "@/components/ui/toast"
@@ -116,7 +115,6 @@ export default function TomarPedidoPage() {
 
   const [categoriaId, setCategoriaId] = useState("todas")
   const [busqueda, setBusqueda] = useState("")
-  const [carritoAbierto, setCarritoAbierto] = useState(false)
 
   const [productoMods, setProductoMods] = useState<ProductoCarta | null>(null)
   const [lineaMods, setLineaMods] = useState<LineaCarrito | null>(null)
@@ -607,144 +605,132 @@ export default function TomarPedidoPage() {
         title="Tomar pedido"
         subtitle="Captura manual en caja: arma el carrito, envía a cocina y pasa el cobro a Caja (V1)."
         actions={
-          <Button variant="primary" onClick={() => setCarritoAbierto(true)}>
+          <Button variant="primary" disabled={lineas.length === 0} onClick={abrirConfirmacion}>
             <ShoppingCart size={16} /> Enviar pedido
             {unidades > 0 ? ` · ${formatMoney(totales.totalCentavos, moneda)}` : ""}
           </Button>
         }
       />
 
-      <div className="tp-barra">
-        <ModalidadSelector value={modalidad} onChange={cambiarModalidad} />
-        {modalidad === "mesa" ? (
-          <div className="tp-barra__campo">
-            <span className="field__label">
-              <Users size={12} /> Comensales
-            </span>
-            <span className="tp-stepper">
-              <IconButton
-                label="Menos comensales"
-                className="tp-stepper__btn"
-                disabled={comensales <= 1}
-                onClick={() => setComensales(comensales - 1)}
-              >
-                −
-              </IconButton>
-              <span className="tp-stepper__valor">{comensales}</span>
-              <IconButton
-                label="Más comensales"
-                className="tp-stepper__btn"
-                disabled={comensales >= 30}
-                onClick={() => setComensales(comensales + 1)}
-              >
-                +
-              </IconButton>
-            </span>
+      <div className="tp-layout">
+        <div className="tp-catalogo-col">
+          <div className="tp-barra">
+            <ModalidadSelector value={modalidad} onChange={cambiarModalidad} />
+            {modalidad === "mesa" ? (
+              <div className="tp-barra__campo">
+                <span className="field__label">
+                  <Users size={12} /> Comensales
+                </span>
+                <span className="tp-stepper">
+                  <IconButton
+                    label="Menos comensales"
+                    className="tp-stepper__btn"
+                    disabled={comensales <= 1}
+                    onClick={() => setComensales(comensales - 1)}
+                  >
+                    −
+                  </IconButton>
+                  <span className="tp-stepper__valor">{comensales}</span>
+                  <IconButton
+                    label="Más comensales"
+                    className="tp-stepper__btn"
+                    disabled={comensales >= 30}
+                    onClick={() => setComensales(comensales + 1)}
+                  >
+                    +
+                  </IconButton>
+                </span>
+              </div>
+            ) : null}
           </div>
-        ) : null}
+
+          <CatalogoPanel
+            categorias={carta.data?.categorias ?? []}
+            productos={carta.data?.productos ?? []}
+            cargando={carta.isLoading}
+            error={carta.isError}
+            onReintentar={() => void carta.refetch()}
+            categoriaId={categoriaId}
+            busqueda={busqueda}
+            onCategoria={setCategoriaId}
+            onBusqueda={setBusqueda}
+            buscadorRef={buscadorRef}
+            puedeAgregar={puedeCrear}
+            moneda={moneda}
+            cantidades={cantidadesEnPedido}
+            onAgregar={agregarProducto}
+            onPersonalizar={(producto) => {
+              setLineaMods(null)
+              setProductoMods(producto)
+            }}
+            onAgotado={(producto) =>
+              mostrar(
+                `«${producto.nombre}» agotado (${producto.agotado.origenDetalle ?? "sin origen"}).${
+                  producto.agotado.reactivacionEstimada
+                    ? ` Reactivación estimada: ${new Date(producto.agotado.reactivacionEstimada).toLocaleString("es-MX")}.`
+                    : " Sin reactivación estimada."
+                }${producto.alternativaNombre ? ` Sugerencia: ${producto.alternativaNombre}.` : ""}`,
+                "error",
+              )
+            }
+            onSinPermiso={() => mostrar("Requiere permiso tomar-pedido.crear.", "error")}
+          />
+        </div>
+
+        <div className="tp-carrito-col">
+          <CarritoPanel
+            lineas={lineas}
+            moneda={moneda}
+            lineaActivaId={lineaActivaId}
+            puedeCrear={puedeCrear}
+            onActivar={setLineaActivaId}
+            onCantidad={cambiarCantidad}
+            onQuitar={quitarLinea}
+            onModificadores={(linea) => {
+              const producto = carta.data?.productos.find((item) => item.id === linea.productoId)
+              if (!producto) {
+                mostrar("El producto ya no está en la carta vigente.", "error")
+                return
+              }
+              setProductoMods(producto)
+              setLineaMods(linea)
+            }}
+            onNota={setLineaNota}
+            notas={notas}
+            onNotas={setNotas}
+            onVaciar={vaciarCarrito}
+            totales={totales}
+            descuento={descuento}
+            propinaPct={propinaPct}
+            onPropina={setPropinaPct}
+            puedeDescuento={puedeDescuento}
+            puedePrecuenta={puedePrecuenta}
+            puedeCobrar={puedeCobrar}
+            turnoAbierto={Boolean(turno)}
+            guardando={crear.isPending || guardar.isPending}
+            enviando={enviar.isPending}
+            cobrando={cobrar.isPending}
+            guardadoEn={guardadoEn}
+            onGuardar={() => void guardarBorradorManual()}
+            onDescuento={() => {
+              if (!puedeDescuento) {
+                mostrar("Requiere permiso tomar-pedido.descuento.", "error")
+                return
+              }
+              setDescuentoAbierto(true)
+            }}
+            onQuitarDescuento={() => {
+              setDescuento(null)
+              mostrar("Descuento retirado; el cambio queda auditado.", "info")
+            }}
+            onPrecuenta={() => void imprimirPrecuenta()}
+            onEnviar={() => {
+              abrirConfirmacion()
+            }}
+            onCobrar={() => void cobrarPedido()}
+          />
+        </div>
       </div>
-
-      <CatalogoPanel
-        categorias={carta.data?.categorias ?? []}
-        productos={carta.data?.productos ?? []}
-        cargando={carta.isLoading}
-        error={carta.isError}
-        onReintentar={() => void carta.refetch()}
-        categoriaId={categoriaId}
-        busqueda={busqueda}
-        onCategoria={setCategoriaId}
-        onBusqueda={setBusqueda}
-        buscadorRef={buscadorRef}
-        puedeAgregar={puedeCrear}
-        moneda={moneda}
-        cantidades={cantidadesEnPedido}
-        onAgregar={agregarProducto}
-        onPersonalizar={(producto) => {
-          setLineaMods(null)
-          setProductoMods(producto)
-        }}
-        onAgotado={(producto) =>
-          mostrar(
-            `«${producto.nombre}» agotado (${producto.agotado.origenDetalle ?? "sin origen"}).${
-              producto.agotado.reactivacionEstimada
-                ? ` Reactivación estimada: ${new Date(producto.agotado.reactivacionEstimada).toLocaleString("es-MX")}.`
-                : " Sin reactivación estimada."
-            }${producto.alternativaNombre ? ` Sugerencia: ${producto.alternativaNombre}.` : ""}`,
-            "error",
-          )
-        }
-        onSinPermiso={() => mostrar("Requiere permiso tomar-pedido.crear.", "error")}
-      />
-
-      <Drawer
-        open={carritoAbierto}
-        onClose={() => setCarritoAbierto(false)}
-        title="Pedido actual"
-        subtitle={
-          lineas.length === 0 ? "Sin líneas todavía" : `${lineas.length} línea(s) · ${unidades} pieza(s)`
-        }
-        acciones={
-          lineas.length > 0 ? (
-            <Button variant="ghost" className="text-action" disabled={!puedeCrear} onClick={vaciarCarrito}>
-              Vaciar
-            </Button>
-          ) : null
-        }
-        width={480}
-      >
-        <CarritoPanel
-          variant="drawer"
-          lineas={lineas}
-          moneda={moneda}
-          lineaActivaId={lineaActivaId}
-          puedeCrear={puedeCrear}
-          onActivar={setLineaActivaId}
-          onCantidad={cambiarCantidad}
-          onQuitar={quitarLinea}
-          onModificadores={(linea) => {
-            const producto = carta.data?.productos.find((item) => item.id === linea.productoId)
-            if (!producto) {
-              mostrar("El producto ya no está en la carta vigente.", "error")
-              return
-            }
-            setProductoMods(producto)
-            setLineaMods(linea)
-          }}
-          onNota={setLineaNota}
-          notas={notas}
-          onNotas={setNotas}
-          onVaciar={vaciarCarrito}
-          totales={totales}
-          descuento={descuento}
-          propinaPct={propinaPct}
-          onPropina={setPropinaPct}
-          puedeDescuento={puedeDescuento}
-          puedePrecuenta={puedePrecuenta}
-          puedeCobrar={puedeCobrar}
-          turnoAbierto={Boolean(turno)}
-          guardando={crear.isPending || guardar.isPending}
-          enviando={enviar.isPending}
-          cobrando={cobrar.isPending}
-          guardadoEn={guardadoEn}
-          onGuardar={() => void guardarBorradorManual()}
-          onDescuento={() => {
-            if (!puedeDescuento) {
-              mostrar("Requiere permiso tomar-pedido.descuento.", "error")
-              return
-            }
-            setDescuentoAbierto(true)
-          }}
-          onQuitarDescuento={() => {
-            setDescuento(null)
-            mostrar("Descuento retirado; el cambio queda auditado.", "info")
-          }}
-          onPrecuenta={() => void imprimirPrecuenta()}
-          onEnviar={() => {
-            abrirConfirmacion()
-          }}
-          onCobrar={() => void cobrarPedido()}
-        />
-      </Drawer>
 
       <ModificadoresDialog
         open={Boolean(productoMods)}
