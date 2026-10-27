@@ -97,6 +97,16 @@ node prod.js --down     # detiene (conserva la BD)
 Automático: `.github/workflows/ci-cd.yml` corre CI en cada push/PR y despliega
 en `dev` con el runner self-hosted `[self-hosted, linux, mercaldas]`.
 
+Para registrar ese runner (una sola vez, con un token de
+GitHub → Settings → Actions → Runners → New self-hosted runner):
+
+```bash
+sudo bash deploy/install-runner.sh <REGISTRATION_TOKEN>
+```
+
+El token caduca en ~1 hora y debe generarlo alguien con permiso de
+administración sobre `jctrejosi/restaurants`.
+
 ## Seguridad implementada
 
 - Solo `edge_caddy` publica `80/443`. Backend, BD y puertos internos no se
