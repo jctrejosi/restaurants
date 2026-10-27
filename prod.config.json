@@ -1,7 +1,7 @@
 {
   "mode": "edge",
   "dnsZone": "jcti.xyz",
-  "baseDomain": "restaurant.jcti.xyz",
+  "baseDomain": "restaurante.jcti.xyz",
   "publicIp": "170.254.229.68",
   "acmeEmail": "admin@jcti.xyz",
   "tls": true,
@@ -9,10 +9,10 @@
     "http": "127.0.0.1:30390"
   },
   "hosts": {
-    "app": "restaurant.jcti.xyz",
-    "reservas": "reservas.jcti.xyz",
-    "cocina": "cocina.jcti.xyz",
-    "admin": "admin.jcti.xyz",
-    "mesero": "mesero.jcti.xyz"
+    "app": "restaurante.jcti.xyz",
+    "reservas": "restaurante.reservas.jcti.xyz",
+    "cocina": "restaurante.cocina.jcti.xyz",
+    "admin": "restaurante.admin.jcti.xyz",
+    "mesero": "restaurante.mesero.jcti.xyz"
   }
 }

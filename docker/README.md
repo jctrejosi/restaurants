@@ -48,11 +48,11 @@ Registros **tipo A**, TTL 600, todos apuntando a `170.254.229.68`:
 
 | Nombre | Tipo | Valor | Interfaz |
 |---|---|---|---|
-| `restaurant` | A | 170.254.229.68 | web de reservas/pedidos |
-| `reservas` | A | 170.254.229.68 | web de reservas (alias) |
-| `cocina` | A | 170.254.229.68 | KDS de cocina |
-| `admin` | A | 170.254.229.68 | backoffice |
-| `mesero` | A | 170.254.229.68 | APK mesero (web) |
+| `restaurante` | A | 170.254.229.68 | web de reservas/pedidos |
+| `restaurante.reservas` | A | 170.254.229.68 | web de reservas (alias) |
+| `restaurante.cocina` | A | 170.254.229.68 | KDS de cocina |
+| `restaurante.admin` | A | 170.254.229.68 | backoffice |
+| `restaurante.mesero` | A | 170.254.229.68 | APK mesero (web) |
 
 No crees comodines ni `www`. El edge conserva el `Host` y el Caddy interno
 decide qué SPA sirve. `node prod.js` imprime esta misma tabla.
@@ -80,7 +80,7 @@ decide qué SPA sirve. `node prod.js` imprime esta misma tabla.
    - comprueba que el puerto no esté ocupado e indica **qué proceso o
      contenedor** lo usa;
    - construye la imagen, levanta app + BD, espera el healthcheck y prueba
-     el front local y `https://restaurant.jcti.xyz/api/health`.
+     el front local y `https://restaurante.jcti.xyz/api/health`.
 
 Let's Encrypt tarda unos segundos en emitir el certificado tras crear el DNS.
 
