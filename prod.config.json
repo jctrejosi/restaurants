@@ -1,0 +1,18 @@
+{
+  "mode": "edge",
+  "dnsZone": "jcti.xyz",
+  "baseDomain": "restaurant.jcti.xyz",
+  "publicIp": "170.254.229.68",
+  "acmeEmail": "admin@jcti.xyz",
+  "tls": true,
+  "edgePorts": {
+    "http": "127.0.0.1:30390"
+  },
+  "hosts": {
+    "app": "restaurant.jcti.xyz",
+    "reservas": "reservas.jcti.xyz",
+    "cocina": "cocina.jcti.xyz",
+    "admin": "admin.jcti.xyz",
+    "mesero": "mesero.jcti.xyz"
+  }
+}

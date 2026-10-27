@@ -1,0 +1,117 @@
+# ============================================================
+# Restaurantes (Punto C) — producción.
+#
+# Dos contenedores:
+#   app      → Caddy interno (:8080) + backend NestJS (:3001) + SPAs.
+#   postgres → PostgreSQL 16 + PostGIS, SOLO en la red interna.
+#
+# Solo se publica el puerto del front en 127.0.0.1 (30390) para diagnóstico.
+# El único contenedor que ve internet es `edge_caddy` (repo ecommerce), que
+# publica 80/443 y reenvía a `restaurants_app:8080` por la red `shared_edge`.
+#
+# Uso normal: `node prod.js` (sincroniza docker/.env, comprueba puertos,
+# construye y levanta). A mano:
+#   docker compose --env-file docker/.env -f docker/docker-compose.yml up -d --build
+# ============================================================
+name: restaurants_prod
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: restaurants/app:latest
+    container_name: restaurants_app
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      BACKEND_PORT: "3001"
+      HTTP_PORT: "8080"
+      # La BD se resuelve por DNS interno; nunca por localhost.
+      DB_HOST: restaurants_prod_postgres
+      DB_PORT: "5432"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-restaurants}:${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD en docker/.env}@restaurants_prod_postgres:5432/${POSTGRES_DB:-restaurants}"
+      # PostgreSQL local del compose no usa TLS; el backend lo activa solo
+      # cuando NODE_ENV=production, así que hay que desactivarlo explícitamente.
+      DB_SSL: "false"
+      # Fail-closed: sin CORS_ORIGIN el backend no arranca (no abre "*").
+      CORS_ORIGIN: "${CORS_ORIGIN:?Falta CORS_ORIGIN en docker/.env}"
+      # Migraciones + seed idempotentes al arrancar (pon 0 para omitirlos).
+      RUN_DB_MIGRATIONS: "${RUN_DB_MIGRATIONS:-1}"
+      TZ: "${TZ:-America/Bogota}"
+    ports:
+      # Solo loopback y puerto propio (no 80/443, no 8080/8443 genéricos).
+      - "${PUBLIC_HTTP_PORT:-127.0.0.1:30390}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shared_edge   # la usa edge_caddy para alcanzar restaurants_app:8080
+      - internal      # BD; sin salida a internet
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # El sistema de archivos es de solo lectura; Caddy y Node escriben en /tmp.
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: unless-stopped
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: restaurants_prod_postgres
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:-restaurants}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD en docker/.env}"
+      POSTGRES_DB: "${POSTGRES_DB:-restaurants}"
+      TZ: "${TZ:-America/Bogota}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Extensiones (PostGIS, citext, unaccent, btree_gist…). Solo corre al
+      # inicializar el volumen por primera vez.
+      - ../db/docker/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    # SIN `ports`: la BD no se publica ni en loopback.
+    networks:
+      - internal
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+
+networks:
+  # Red interna: la BD no tiene salida a internet ni puertos publicados.
+  internal:
+    name: restaurants_internal
+    internal: true
+  # Red que comparte con el edge compartido (docker/edge del repo ecommerce).
+  shared_edge:
+    external: true
+    name: shared_edge
+
+volumes:
+  postgres_data:
+    name: restaurants_prod_postgres_data

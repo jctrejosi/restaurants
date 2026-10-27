@@ -6,6 +6,7 @@
     "dist",
     "**/*spec.ts",
     "drizzle",
+    "scripts",
     "src/database/schema.ts",
     "src/database/relations.ts"
   ]

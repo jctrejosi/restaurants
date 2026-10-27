@@ -1,0 +1,31 @@
+# Contexto de build = raíz del repo. Todo lo que no entra en la imagen.
+.git
+.gitignore
+.github
+deploy
+docs
+logs
+punto_c
+
+# Dependencias y artefactos locales (se reconstruyen dentro de la imagen).
+**/node_modules
+**/dist
+**/coverage
+
+# Secretos y respaldos: nunca deben viajar en la imagen.
+**/.env
+**/.env.*
+!**/.env.example
+db/backups
+**/*.dump
+**/*.bak
+**/*.bak-*
+
+# Sistema / basura de Windows.
+**/Thumbs.db
+**/desktop.ini
+**/.DS_Store
+
+# Archivos de producción que sí se copian explícitamente en el Dockerfile.
+!docker/entrypoint.sh
+!docker/gen-caddyfile.mjs

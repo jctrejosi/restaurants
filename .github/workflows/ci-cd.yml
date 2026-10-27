@@ -1,0 +1,135 @@
+name: CI/CD
+
+# CI valida cualquier cambio en dev y master. El despliegue automático corre
+# SOLO en push/manual sobre dev, después de que CI e imagen pasen.
+on:
+  pull_request:
+    branches: [dev, master]
+  push:
+    branches: [dev, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    name: Backend (migraciones + pruebas de BD)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: restaurants
+        ports:
+          - 5435:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d restaurants"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5435/restaurants
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cliente PostgreSQL
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Extensiones y objeto immutable_unaccent
+        run: >
+          PGPASSWORD=postgres psql -h localhost -p 5435 -U postgres -d restaurants
+          -v ON_ERROR_STOP=1 -f db/docker/init.sql
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: backend/yarn.lock
+
+      - name: Instalar dependencias
+        working-directory: backend
+        run: yarn install --frozen-lockfile --network-timeout 600000
+
+      - name: Aplicar migraciones (base vacía)
+        working-directory: backend
+        run: yarn db:migrate
+
+      - name: Seed idempotente
+        working-directory: backend
+        run: yarn db:seed
+
+      # roles.sql necesita las tablas y la función analytics.* ya creadas por
+      # las migraciones, así que va DESPUÉS del seed.
+      - name: Usuarios de base de datos (migrator/app/readonly)
+        run: >
+          PGPASSWORD=postgres psql -h localhost -p 5435 -U postgres -d restaurants
+          -v ON_ERROR_STOP=1 -f db/docker/roles.sql
+
+      - name: Compilar
+        working-directory: backend
+        run: yarn build
+
+      - name: Pruebas de base de datos
+        working-directory: backend
+        run: yarn db:test
+
+  image:
+    name: Build de la imagen de producción
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Compila EXACTAMENTE la imagen que se despliega: backend NestJS, las 4
+      # interfaces Vite y el runtime con Caddy. No publica nada.
+      - name: Construir imagen
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Desplegar en el VPS
+    needs: [ci, image]
+    if: >-
+      needs.ci.result == 'success' &&
+      needs.image.result == 'success' &&
+      github.ref == 'refs/heads/dev' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: [self-hosted, linux, mercaldas]
+    timeout-minutes: 45
+    concurrency:
+      group: deploy-restaurants
+      cancel-in-progress: false
+    steps:
+      - name: Desplegar commit
+        env:
+          # Ruta del clon de producción en el VPS (WSL). Se puede sobreescribir
+          # con la variable de repositorio DEPLOY_PATH.
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/mnt/c/Users/Desarrolo4/Documents/restaurants' }}
+          TARGET_SHA: ${{ github.sha }}
+        run: |
+          set -Eeuo pipefail
+          test -d "$DEPLOY_PATH" || {
+            echo "No existe DEPLOY_PATH=$DEPLOY_PATH" >&2
+            exit 1
+          }
+          bash "$DEPLOY_PATH/deploy/deploy.sh" "$TARGET_SHA"
