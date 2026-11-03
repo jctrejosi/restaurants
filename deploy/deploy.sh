@@ -16,7 +16,7 @@
 # ============================================================
 set -Eeuo pipefail
 
-ROOT="${DEPLOY_PATH:-/mnt/c/Users/Desarrolo4/Documents/restaurants}"
+ROOT="${DEPLOY_PATH:-/home/deploy/restaurants}"
 TARGET="${1:-origin/dev}"
 COMPOSE_FILE="$ROOT/docker/docker-compose.yml"
 ENV_FILE="$ROOT/docker/.env"

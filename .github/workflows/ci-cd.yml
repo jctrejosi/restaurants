@@ -124,7 +124,7 @@ jobs:
         env:
           # Ruta del clon de producción en el VPS (WSL). Se puede sobreescribir
           # con la variable de repositorio DEPLOY_PATH.
-          DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/mnt/c/Users/Desarrolo4/Documents/restaurants' }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/home/deploy/restaurants' }}
           TARGET_SHA: ${{ github.sha }}
         run: |
           set -Eeuo pipefail
