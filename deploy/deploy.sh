@@ -114,7 +114,7 @@ fi
 
 # Comprobación de punta a punta por el edge (TLS + DNS).
 if command -v curl >/dev/null 2>&1 && docker inspect "$EDGE_CONTAINER" >/dev/null 2>&1; then
-  if curl -fsS --max-time 15 --resolve "${PUBLIC_HOST}:443:127.0.0.1" \
+  if curl -fsS --max-time 15 --cacert /etc/mercaldas/edge-tls/origin.pem --resolve "${PUBLIC_HOST}:443:127.0.0.1" \
       "$PUBLIC_HEALTH_URL" >/dev/null 2>&1; then
     log "HTTPS público OK: $PUBLIC_HEALTH_URL"
   else
